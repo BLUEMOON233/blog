@@ -34,7 +34,7 @@ description:
 
 ## 方法要点
 1、历史轨迹和未来轨迹被视为同一类序列数据，由同一个模型处理，消除了编码历史与预测未来之间的逻辑割裂。
-2、过度预测的实现：将轨迹数据分成若干时间段$T_sub=10$，对于历史轨迹，时间段为$[-T_sub, 0]$，预测轨迹为$[0, T_sub]$，过度预测轨迹为$[T_sub, 2*T_sub]$。
+2、过度预测的实现：将轨迹数据分成若干时间段$T_{sub}=10$，对于历史轨迹，时间段为$[-T_{sub}, 0]$，预测轨迹为$[0, T_{sub}]$，过度预测轨迹为$[T_{sub}, 2*T_{sub}]$。
 每一个循环中，都包含Proposer和Refiner两个阶段，其中Proposer生成轨迹，Refiner将Proposer生成的轨迹作为历史轨迹输入，生成offset，最终修正Proposer的输出，其采用相同的架构（1、Tokenizer=>2、4层Attention Stack（参考QCNet）=>3、Detokenizer）。
 
 
