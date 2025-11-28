@@ -11,6 +11,7 @@ description:
 
 ## 论文信息
 - 年份 2025
+- 期刊 ICCV
 - 作者 Daehee Park[1], Monu Surana[2], Pranav Desai[2], Ashish Mehta[2],
 Reuben MV John[2], Kuk-Jin Yoon[3]
 - 机构

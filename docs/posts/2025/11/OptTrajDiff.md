@@ -11,6 +11,7 @@ description:
 
 ## 论文信息
 - 年份 2024
+- 期刊 ECCV
 - 作者 Yixiao Wang[1], Chen Tang[1,2], Lingfeng Sun[1], Simone Rossi[3], Yichen Xie[1], Chensheng Peng[1], Thomas Hannagan[3], Stefano Sabatini[3], Nicola Poerio[4], Masayoshi Tomizuka[1], and Wei Zhan
 - 机构 美国加州大学伯克利分校、美国德克萨斯大学奥斯汀分校、斯特兰蒂斯
 
