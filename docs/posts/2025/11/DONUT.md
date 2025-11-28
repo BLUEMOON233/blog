@@ -11,6 +11,7 @@ description:
 
 ## 论文信息
 - 年份 2025
+- 期刊 ICCV
 - 作者 Markus Knoche[1], Daan de Geus[1,2], Bastian Leibe[1]
 - 机构 德国亚琛工业大学、荷兰埃因霍温理工大学
 
