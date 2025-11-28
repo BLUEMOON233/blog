@@ -1,14 +1,20 @@
 ---
 title: GALTraj
 date: 2025-11-26
-category: 笔记
+category: 论文笔记
 tags:
-  - 笔记
   - 轨迹生成
 description: 
 ---
 
 # Generative Active Learning for Long-tail Trajectory Prediction via  Controllable Diffusion Model
+
+## 论文信息
+- 年份 2025
+- 作者 Daehee Park[1], Monu Surana[2], Pranav Desai[2], Ashish Mehta[2],
+Reuben MV John[2], Kuk-Jin Yoon[3]
+- 机构
+韩国DGIST智能系统与学习实验室、美国高通研究院、韩国KAIST视觉智能实验室
 
 ## 摘要
 虽然数据驱动的轨迹预测提高了自动驾驶系统的可靠性，但它仍然难以应对极少观察到的长尾情况。之前的研究通过修改模型架构（如使用超网络）来解决这一问题。相比之下，我们建议改进训练过程，在不改变模型结构的情况下释放每个模型的潜力。我们介绍了用于轨迹预测的生成式主动学习（GALTraj），这是第一种将生成式主动学习成功应用于轨迹预测的方法。它能主动识别出模型失效的罕见尾部样本，并在训练过程中使用可控扩散模型来增强这些样本。在我们的框架中，最重要的是生成多样、真实并保留尾部特征的场景。因此，我们设计了一种尾部感知生成方法，该方法可应用量身定制的扩散指导，生成既能捕捉罕见行为又能遵守交通规则的轨迹。与之前只关注场景多样性的模拟方法不同，GALTraj 首次展示了模拟器驱动的增强功能如何有利于轨迹预测中的长尾学习。在多个轨迹数据集（WOMD、Argoverse2）和流行骨干网（QCNet、MTR）上的实验证实，我们的方法显著提高了尾部样本的性能，同时也提高了头部样本的准确性。
