@@ -1,10 +1,10 @@
 ---
-title: OptTrajDiff
+title: OptTrajDiff学习笔记
 date: 2025-11-28
 category: 论文笔记
 tags:
   - 轨迹生成
-description: 
+description: 对OptTrajDiff的论文的学习总结
 ---
 
 # Optimizing Diffusion Models for Joint Trajectory  Prediction and Controllable Generation

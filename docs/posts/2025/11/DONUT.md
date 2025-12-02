@@ -1,10 +1,10 @@
 ---
-title: DONUT
+title: DONUT学习笔记
 date: 2025-11-25
 category: 论文笔记
 tags:
   - 轨迹生成
-description: 
+description: 对DONUT的论文的学习总结
 ---
 
 # DONUT: A Decoder-Only Model for Trajectory Prediction
