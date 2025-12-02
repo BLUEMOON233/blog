@@ -1,10 +1,10 @@
 ---
-title: GALTraj
+title: GALTraj学习笔记
 date: 2025-11-26
 category: 论文笔记
 tags:
   - 轨迹生成
-description: 
+description: 对GALTraj的论文的学习总结
 ---
 
 # Generative Active Learning for Long-tail Trajectory Prediction via  Controllable Diffusion Model
