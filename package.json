@@ -9,7 +9,6 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "markdown-it-mathjax3": "^4.3.2",
-    "webdav": "^5.8.0"
+    "markdown-it-mathjax3": "^4.3.2"
   }
 }
