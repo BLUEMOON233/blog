@@ -14,7 +14,6 @@ export default defineConfig({
       { text: '文章', link: '/pages/archives/' },
       { text: '分类', link: '/pages/categories/' },
       { text: '标签', link: '/pages/tags/' },
-      { text: '待办', link: '/pages/todo' },
       { text: '关于', link: '/pages/about' }
     ],
 
@@ -63,13 +62,13 @@ export default defineConfig({
   },
 
   head: [
-    ['link',{ rel: 'icon', href: '/logo.png'}],
+    ['link', { rel: 'icon', href: '/logo.png' }],
   ],
 
   markdown: {
-      config: (md) => {
-        md.use(mathjax3)
-      }
+    config: (md) => {
+      md.use(mathjax3)
     }
+  }
 
 })
