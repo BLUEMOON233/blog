@@ -14,7 +14,7 @@ export default {
     posts.forEach(post => {
       if (post.frontmatter.tags && Array.isArray(post.frontmatter.tags)) {
         post.frontmatter.tags.forEach((tag: string) => {
-          tags.add(tag)
+          tags.add(tag.toLowerCase())
         })
       }
     })

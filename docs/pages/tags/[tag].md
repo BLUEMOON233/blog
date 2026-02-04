@@ -10,11 +10,21 @@ import { computed } from 'vue'
 const { params } = useData()
 const currentTag = computed(() => params.value.tag)
 
-// 过滤包含当前标签的文章
+// 过滤包含当前标签的文章 (忽略大小写)
 const tagPosts = computed(() => {
   return posts.filter(post => {
-    return post.tags && Array.isArray(post.tags) && post.tags.includes(currentTag.value)
+    return post.tags && Array.isArray(post.tags) && 
+      post.tags.some(t => t.toLowerCase() === currentTag.value)
   })
+})
+
+//以此获取原始标签名用于显示
+const displayTag = computed(() => {
+  if (tagPosts.value.length > 0 && tagPosts.value[0].tags) {
+    const original = tagPosts.value[0].tags.find(t => t.toLowerCase() === currentTag.value)
+    if (original) return original
+  }
+  return currentTag.value
 })
 </script>
 
@@ -153,7 +163,7 @@ const tagPosts = computed(() => {
 
   <div class="tag-header">
     <h1 class="tag-title">
-      <span>#{{ currentTag }}</span>
+      <span>#{{ displayTag }}</span>
     </h1>
     <p class="tag-count">共 {{ tagPosts.length }} 篇文章</p>
   </div>
@@ -177,9 +187,9 @@ const tagPosts = computed(() => {
         <a
           v-for="tag in post.tags"
           :key="tag"
-          :href="`/pages/tags/${tag}.html`"
+          :href="`/pages/tags/${tag.toLowerCase()}.html`"
           class="tag"
-          :class="{ active: tag === currentTag }"
+          :class="{ active: tag.toLowerCase() === currentTag }"
         >
           #{{ tag }}
         </a>

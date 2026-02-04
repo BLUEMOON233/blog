@@ -3,7 +3,7 @@ title: 使用OpenList配置Zotero同步
 date: 2025-10-17
 category: 部署
 tags:
-  - Openlist
+  - OpenList
   - Zotero
   - WebDAV
 description: 配置OpenList中的WebDAV服务，以实现Zotero中的论文同步。
