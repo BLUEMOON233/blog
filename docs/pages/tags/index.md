@@ -101,7 +101,7 @@ const tags = computed(() => {
   <p class="total-count">共 {{ tags.length }} 个标签</p>
   <ul class="tag-cloud">
     <li v-for="tag in tags" :key="tag.name" class="tag-item">
-      <a :href="`/pages/tags/${tag.name}.html`" class="tag-link">
+      <a :href="`/pages/tags/${tag.name.toLowerCase()}.html`" class="tag-link">
         <span class="tag-name">#{{ tag.name }}</span>
         <span class="tag-count">({{ tag.count }})</span>
       </a>
