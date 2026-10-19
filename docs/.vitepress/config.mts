@@ -1,5 +1,4 @@
 import { defineConfig } from 'vitepress'
-import mathjax3 from 'markdown-it-mathjax3'
 
 
 // https://vitepress.dev/reference/site-config
@@ -66,9 +65,8 @@ export default defineConfig({
   ],
 
   markdown: {
-    config: (md) => {
-      md.use(mathjax3)
-    }
+    // 官方数学公式支持（依赖 markdown-it-mathjax3），会给公式加 v-pre，避免 {{ }} 被 Vue 解析
+    math: true
   }
 
 })
