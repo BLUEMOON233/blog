@@ -20,6 +20,8 @@ export default createContentLoader('posts/**/*.md', {
   excerpt: true,
   transform(raw): Post[] {
     return raw
+      // draft: true 的草稿不出现在首页/归档/分类/标签里
+      .filter(({ frontmatter }) => frontmatter.draft !== true)
       .map(({ url, frontmatter, excerpt }) => ({
         title: frontmatter.title,
         url,

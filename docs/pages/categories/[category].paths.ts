@@ -11,7 +11,7 @@ export default {
 
     // 收集所有分类
     const categories = new Set<string>()
-    posts.forEach(post => {
+    posts.filter(post => post.frontmatter.draft !== true).forEach(post => {
       if (post.frontmatter.category) {
         categories.add(post.frontmatter.category)
       }

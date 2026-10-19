@@ -11,7 +11,7 @@ export default {
 
     // 收集所有标签
     const tags = new Set<string>()
-    posts.forEach(post => {
+    posts.filter(post => post.frontmatter.draft !== true).forEach(post => {
       if (post.frontmatter.tags && Array.isArray(post.frontmatter.tags)) {
         post.frontmatter.tags.forEach((tag: string) => {
           tags.add(tag.toLowerCase())
