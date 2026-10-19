@@ -204,10 +204,20 @@
 .post-head {
   margin-bottom: 1.25rem;
 }
-.post-head .kicker {
+.post-head.kicker {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 0.9rem;
+  gap: 0.25rem 1rem;
+  margin-bottom: 1rem;
+}
+.vp-doc .post-head.kicker a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.vp-doc .post-head.kicker time::before {
+  content: "/";
+  margin-right: 1rem;
+  color: var(--rule);
 }
 .post-standfirst {
   margin: 1.25rem 0 0.5rem;
