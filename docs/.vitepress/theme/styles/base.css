@@ -3,10 +3,12 @@
  * ================================================================= */
 ::selection { background: rgb(217 119 87 / 22%); }
 
-:where(a, button, input, [tabindex]):focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgb(217 119 87 / 35%);
-  border-radius: var(--r-xs);
+/* 键盘焦点：只用 outline，不和卡片的装饰阴影抢 box-shadow；高对比度模式下也保留。
+ * :is() 按参数里最高的 [tabindex] 计特异性，合计 (0,2,0)，
+ * 压过 VitePress base.css 的 button:focus-visible { outline: 4px auto }（0,1,1）。 */
+:is(a, button, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* 元信息（日期、栏目、kicker）：等宽、14px、不全大写 */

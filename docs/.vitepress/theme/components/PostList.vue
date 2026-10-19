@@ -113,9 +113,10 @@ const md = (p: Post) => `${pad(d(p).getMonth() + 1)}.${pad(d(p).getDate())}`
   border: 1px solid var(--chip-border);
   border-radius: var(--r-chip);
   padding: 0.05rem 0.55rem;
-  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.toc-tags a:hover { background: var(--accent-soft); color: var(--accent); }
+/* 悬停只换底色和边框，文字保持 ink-2（accent 叠在浅橙底上不够 4.5） */
+.toc-tags a:hover { background: var(--accent-soft); border-color: var(--chip-border-hover); }
 @media (max-width: 640px) {
   .toc-row {
     grid-template-columns: 1fr auto;
