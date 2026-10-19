@@ -107,3 +107,37 @@
   border-radius: 0 6px 6px 0;
   padding: 4px 16px;
 }
+
+/* ---------------------------------------------------------------
+ * 移动端
+ * ------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .vp-doc h1 {
+    font-size: 1.6rem;
+    line-height: 1.35;
+  }
+  .vp-doc h2 {
+    font-size: 1.3rem;
+    margin-top: 32px;
+    padding-top: 20px;
+  }
+  .vp-doc p,
+  .vp-doc li {
+    line-height: 1.8;
+  }
+  /* 代码块在小屏贴边时阴影会被裁掉，改成更轻的样式 */
+  .vp-doc div[class*="language-"] {
+    box-shadow: none;
+  }
+  .VPHero .tagline {
+    font-size: 1rem;
+  }
+}
+
+/* 中文标题避免被拆成单字一行 */
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3 {
+  word-break: break-word;
+  text-wrap: balance;
+}
