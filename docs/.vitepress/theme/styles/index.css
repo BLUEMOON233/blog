@@ -1,0 +1,5 @@
+/* 主题样式入口：变量 → 基础 → 正文 → 动效（组件样式写在各 .vue 里） */
+@import './tokens.css';
+@import './base.css';
+@import './doc.css';
+@import './motion.css';

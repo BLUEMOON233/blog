@@ -5,8 +5,8 @@ import PostList from './components/PostList.vue'
 import PageHeader from './components/PageHeader.vue'
 import TermIndex from './components/TermIndex.vue'
 
-import './custom.css'
-import './typography.css'
+import './fonts' // 免费自托管网络字体；删掉这一行即只用系统字体
+import './styles/index.css'
 
 export default {
   extends: DefaultTheme,
