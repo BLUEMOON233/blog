@@ -1,5 +1,6 @@
 import type { Theme } from 'vitepress'
-import DefaultTheme from 'vitepress/theme'
+// 不打包默认主题自带的 Inter 字体（我们的字体栈不用它）
+import DefaultTheme from 'vitepress/theme-without-fonts'
 import HomeMag from './components/HomeMag.vue'
 import PostList from './components/PostList.vue'
 import PageHeader from './components/PageHeader.vue'
