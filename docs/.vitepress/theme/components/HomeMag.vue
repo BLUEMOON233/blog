@@ -116,7 +116,8 @@ const cats = [...new Set(posts.map((p) => p.category).filter(Boolean))] as strin
 @media (max-width: 640px) {
   .mag { padding: 2.25rem 1.25rem 4rem; }
   .masthead { padding-bottom: 1.5rem; }
-  .mast-title { font-size: 2.6rem; white-space: nowrap; }
+  /* 不用 nowrap：≤360px 屏幕上 2.6rem 的站名会撑出横向滚动条 */
+  .mast-title { font-size: clamp(2rem, 10vw, 2.6rem); overflow-wrap: anywhere; }
   .mast-motto { font-size: 1.1rem; }
   .lead { margin-top: 1.75rem; padding: 1.6rem 1.35rem; border-radius: 16px; }
   .lead-desc { font-size: 1.1rem; }
