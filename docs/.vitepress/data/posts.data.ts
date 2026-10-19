@@ -1,15 +1,14 @@
 import { createContentLoader } from 'vitepress'
+import { parseDate } from '../date'
 
 export interface Post {
   title: string
   url: string
   date: {
     time: number
-    string: string
   }
   category?: string
   tags?: string[]
-  excerpt?: string
   description?: string
 }
 
@@ -17,17 +16,21 @@ declare const data: Post[]
 export { data }
 
 export default createContentLoader('posts/**/*.md', {
-  excerpt: true,
   transform(raw): Post[] {
     return raw
       // draft: true 的草稿不出现在首页/归档/分类/标签里
       .filter(({ frontmatter }) => frontmatter.draft !== true)
-      .map(({ url, frontmatter, excerpt }) => ({
+      // 没有或写错 date 的文章跳过并警告，不让列表组件在 SSR 时崩溃
+      .filter(({ url, frontmatter }) => {
+        if (parseDate(frontmatter.date)) return true
+        console.warn(`[posts.data] ${url}：date 缺失或无效（${frontmatter.date}），已从文章列表跳过`)
+        return false
+      })
+      .map(({ url, frontmatter }) => ({
         title: frontmatter.title,
         url,
-        excerpt,
         description: frontmatter.description,
-        date: formatDate(frontmatter.date),
+        date: formatDate(parseDate(frontmatter.date)!),
         category: frontmatter.category,
         tags: frontmatter.tags || []
       }))
@@ -35,15 +38,7 @@ export default createContentLoader('posts/**/*.md', {
   }
 })
 
-function formatDate(raw: string): Post['date'] {
-  const date = new Date(raw)
+function formatDate(date: Date): Post['date'] {
   date.setUTCHours(12)
-  return {
-    time: +date,
-    string: date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    })
-  }
+  return { time: +date }
 }

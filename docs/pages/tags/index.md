@@ -6,6 +6,8 @@ description: 按标签浏览 BLUEMOON 的文章
 
 <script setup>
 import { data as posts } from '../../.vitepress/data/posts.data'
+import PageHeader from '../../.vitepress/theme/components/PageHeader.vue'
+import TermIndex from '../../.vitepress/theme/components/TermIndex.vue'
 const m = new Map()
 for (const p of posts) for (const t of p.tags || []) {
   const k = t.toLowerCase()
