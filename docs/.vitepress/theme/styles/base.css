@@ -1,7 +1,7 @@
 /* =================================================================
- * 全站基础：导航、元信息、焦点、目录、页脚
+ * 全站基础：选区、焦点、元信息、导航、目录、列表页骨架
  * ================================================================= */
-::selection { background: rgb(217 119 87 / 22%); }
+::selection { background: var(--selection-bg); }
 
 /* 键盘焦点：只用 outline，不和卡片的装饰阴影抢 box-shadow；高对比度模式下也保留。
  * :is() 按参数里最高的 [tabindex] 计特异性，合计 (0,2,0)，
@@ -20,7 +20,6 @@
 }
 .kicker a { color: var(--accent); text-decoration: none; }
 .kicker a:hover { text-decoration: underline; text-underline-offset: 3px; }
-.kicker time { color: var(--meta); }
 
 /* 导航：毛玻璃 + 衬线站名 */
 .VPNav .VPNavBar .content-body,
@@ -36,54 +35,39 @@
   letter-spacing: -0.01em;
 }
 .VPNavBarMenuLink,
-.VPNavScreenMenuLink {
-  font-size: var(--fs-meta) !important;
-  letter-spacing: 0.04em;
-}
+.VPNavScreenMenuLink { letter-spacing: 0.04em; }
 .VPNavBarMenuLink.active {
+  /* !important：对抗 VPNavBarMenuLink 的 scoped .VPNavBarMenuLink.active[data-v] { color: brand-1 }（0,3,0） */
   color: var(--ink) !important;
-  text-decoration: underline 2px var(--clay);
+  /* 下划线用 accent：clay 对象牙底只有 2.96，不够非文本 3:1 */
+  text-decoration: underline 2px var(--accent);
   text-underline-offset: 6px;
 }
 .VPNavBarSearch .DocSearch-Button-Placeholder,
 .VPNavBarSearch .DocSearch-Button-Key { font-size: var(--fs-meta); }
 
-/* 文章右侧目录 */
+/* 文章右侧目录（VitePress 默认已是 14px，这里只换字体与颜色） */
 .VPDocAsideOutline .outline-title {
   font-family: var(--font-mono);
-  font-size: var(--fs-meta);
   font-weight: 500;
   letter-spacing: 0.02em;
   color: var(--meta);
 }
-.VPDocAsideOutline .outline-link { font-size: var(--fs-meta); }
 .VPDocAsideOutline .outline-marker { background-color: var(--clay); }
 .VPLocalNav .menu-text,
 .VPLocalNavOutlineDropdown button { font-size: var(--fs-meta); }
 
-/* 页脚、上一篇/下一篇、编辑信息、跳到正文 */
-.VPFooter .message,
-.VPFooter .copyright,
-.VPDocFooter .edit-info,
-.VPDocFooter .pager-link .desc,
-.VPLastUpdated,
+/* 跳到正文：!important 对抗 VPSkipLink 的 scoped .VPSkipLink[data-v] { font-size: 12px }（0,2,0） */
 .VPSkipLink { font-size: var(--fs-meta) !important; }
 
-.VPDocFooter .pager-link {
-  background: var(--card-bg);
-  border: var(--bw) solid var(--card-border) !important;
-  border-radius: var(--r-md) !important;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
-    border-color var(--dur) var(--ease);
-}
-.VPDocFooter .pager-link:hover {
-  transform: translateY(var(--lift));
-  box-shadow: var(--card-shadow-hover);
-  border-color: var(--card-border-hover) !important;
-}
-.VPDocFooter .pager-link .title { font-family: var(--font-serif); font-weight: var(--fw-head); }
-
-/* 本地搜索弹窗里的小字 */
+/* 本地搜索弹窗里的小字：!important 对抗 VPLocalSearchBox 的 scoped 0.8rem 字号 */
 .VPLocalSearchBox .titles,
 .VPLocalSearchBox .search-keyboard-shortcuts,
 .VPLocalSearchBox .excerpt { font-size: var(--fs-meta) !important; }
+
+/* 列表页（归档 / 分类 / 标签）共用的版心与“返回”链接 */
+.list-page { max-width: 960px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+.list-back { display: inline-block; margin-top: 3rem; color: var(--accent); text-decoration: none; }
+@media (max-width: 640px) {
+  .list-page { padding: 2.25rem 1.25rem 4rem; }
+}

@@ -6,6 +6,7 @@ export interface Post {
   url: string
   date: {
     time: number
+    iso: string // YYYY-MM-DD，按 UTC 计算；组件只用它显示日期，避免时区差异和 hydration mismatch
   }
   category?: string
   tags?: string[]
@@ -40,5 +41,5 @@ export default createContentLoader('posts/**/*.md', {
 
 function formatDate(date: Date): Post['date'] {
   date.setUTCHours(12)
-  return { time: +date }
+  return { time: +date, iso: date.toISOString().slice(0, 10) }
 }

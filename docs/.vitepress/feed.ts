@@ -7,7 +7,7 @@ import { parseDate } from './date'
 // 从构建好的 dist/posts/**.html 里取正文：.vp-doc 里的图片已是带 hash 的 /assets/xxx 地址。
 // 结构为 <div class="vp-doc …"><div>正文</div></div></main>；匹配不到时返回 undefined，只输出摘要。
 function readBuiltContent(outDir: string, url: string, hostname: string) {
-  const file = path.join(outDir, decodeURI(url))
+  const file = path.join(outDir, url)
   if (!existsSync(file)) return undefined
   const html = readFileSync(file, 'utf-8')
   const m = html.match(/<div[^>]*class="vp-doc[^"]*"[^>]*><div>([\s\S]*)<\/div><\/div><\/main>/)
@@ -50,7 +50,8 @@ export async function genFeed(
     .sort((a, b) => +b.published - +a.published)
     .slice(0, 30)
     .forEach(({ url, frontmatter, published }) => {
-      const link = encodeURI(`${site.hostname}${url}`)
+      // url 是未编码的原始路径；逐段编码（encodeURI 不转义 #/?），首段为空串
+      const link = site.hostname + url.split('/').map(encodeURIComponent).join('/')
       feed.addItem({
         title: frontmatter.title,
         id: link,
