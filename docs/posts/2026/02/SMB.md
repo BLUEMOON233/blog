@@ -8,8 +8,6 @@ tags:
 description: 使用Samba挂载远程服务器目录
 ---
 
----
-
 # macOS 挂载 Linux SMB 共享操作指南
 
 本指南适用于将 Linux 容器内的路径（如深度学习项目目录）挂载到 macOS，并解决因 FUSE 导致的卡顿问题及非标准端口连接问题。
