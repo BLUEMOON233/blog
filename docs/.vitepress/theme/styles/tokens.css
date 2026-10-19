@@ -11,9 +11,11 @@
   --ink-3: #73726c;
   --meta: #5e5d59;          /* 元信息文字，象牙底对比 6.3 */
   --rule: #e8e6dc;
-  --clay: #d97757;          /* 色块、短线、选区、焦点环 */
-  --accent: #b85c3e;        /* 小字与链接，白底对比 4.5 */
+  --clay: #d97757;          /* 色块、短线、选区 */
+  --on-clay: #141413;       /* clay 色块上的文字，亮暗一致，对比 5.9 */
+  --accent: #a9502f;        /* 小字与链接：象牙底 5.1 / 白卡片 5.4 / inset 4.7 */
   --accent-soft: rgb(217 119 87 / 15%);
+  --focus-ring: var(--accent); /* 键盘焦点 outline，象牙底 5.1 */
   --inset: #f0eee6;
 
   /* 卡片 */
@@ -23,6 +25,7 @@
   --card-shadow: 0 1px 2px rgb(20 20 19 / 6%);
   --card-shadow-hover: 0 10px 30px rgb(20 20 19 / 10%);
   --chip-border: rgb(20 20 19 / 8%);
+  --chip-border-hover: color-mix(in srgb, var(--clay) 45%, transparent);
   --code-inline: #8a5a3c;
 
   /* 圆角阶：层级不同，圆角不同 */

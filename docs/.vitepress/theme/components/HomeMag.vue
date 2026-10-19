@@ -77,7 +77,7 @@ const cats = [...new Set(posts.map((p) => p.category).filter(Boolean))] as strin
 .lead-kicker { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; }
 .lead-flag {
   background: var(--clay);
-  color: #fff;
+  color: var(--on-clay);
   border-radius: 999px;
   padding: 0.05rem 0.65rem;
 }
