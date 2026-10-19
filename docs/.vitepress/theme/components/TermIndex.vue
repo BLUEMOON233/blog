@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { withBase } from 'vitepress'
-// 分类 / 标签索引：大号衬线词条 + 等宽篇数，细线分隔
+// 分类 / 标签索引：卡片网格，衬线词条 + 等宽篇数
 defineProps<{ terms: { name: string; slug: string; count: number }[]; base: string; prefix?: string }>()
 </script>
 
 <template>
   <ul class="terms">
     <li v-for="t in terms" :key="t.slug">
-      <a :href="withBase(`${base}${t.slug}.html`)">
+      <a :href="withBase(`${base}${encodeURIComponent(t.slug)}.html`)">
         <span class="term-name">{{ prefix }}{{ t.name }}</span>
-        <span class="term-count">{{ String(t.count).padStart(2, '0') }}</span>
+        <!-- 视觉上是补零的“02”，读屏读“2 篇” -->
+        <span class="term-count">
+          <span aria-hidden="true">{{ String(t.count).padStart(2, '0') }}</span>
+          <span class="visually-hidden">，{{ t.count }} 篇</span>
+        </span>
       </a>
     </li>
   </ul>
@@ -26,6 +30,7 @@ defineProps<{ terms: { name: string; slug: string; count: number }[]; base: stri
   gap: 12px;
 }
 .terms a {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: baseline;

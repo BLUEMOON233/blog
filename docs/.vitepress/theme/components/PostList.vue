@@ -2,37 +2,44 @@
 import { withBase } from 'vitepress'
 import type { Post } from '../../data/posts.data'
 
-// 杂志目录式文章列表：日期 | 标题 + 导语 | 栏目，细线分隔，无卡片
-withDefaults(defineProps<{ posts: Post[]; showDesc?: boolean; showYear?: boolean }>(), {
-  showDesc: true,
-  showYear: true
-})
-const d = (p: Post) => new Date(p.date.time)
-const pad = (n: number) => String(n).padStart(2, '0')
-const md = (p: Post) => `${pad(d(p).getMonth() + 1)}.${pad(d(p).getDate())}`
+// 文章列表：圆角卡片，日期 | 标题 + 导语 + 标签 | 栏目；标题链接伸展铺满整张卡片
+withDefaults(
+  defineProps<{ posts: Post[]; showDesc?: boolean; showYear?: boolean; headingLevel?: 2 | 3 | 4 }>(),
+  {
+    showDesc: true,
+    showYear: true,
+    headingLevel: 3
+  }
+)
+// 日期统一用 posts.data 里按 UTC 算好的 iso（YYYY-MM-DD），客户端与 SSR 输出一致
+const md = (p: Post) => p.date.iso.slice(5).replace('-', '.')
+// 入场错开：第 1 张 120ms，之后每张 +40ms，最多 320ms
+const delay = (i: number) => ({ '--fx-delay': `${Math.min(120 + i * 40, 320)}ms` })
 </script>
 
 <template>
   <ol class="toc">
-    <li v-for="post in posts" :key="post.url" class="toc-row">
-      <time class="toc-date" :datetime="d(post).toISOString().slice(0, 10)">
-        <span v-if="showYear" class="toc-year">{{ d(post).getFullYear() }}.</span>{{ md(post) }}
+    <li v-for="(post, i) in posts" :key="post.url" class="toc-row fx-in" :style="delay(i)">
+      <time class="toc-date" :datetime="post.date.iso">
+        <span v-if="showYear" class="toc-year">{{ post.date.iso.slice(0, 4) }}.</span>{{ md(post) }}
       </time>
       <div class="toc-main">
-        <a :href="withBase(post.url)" class="toc-title">{{ post.title }}</a>
+        <component :is="`h${headingLevel}`" class="toc-heading">
+          <a :href="withBase(post.url)" class="toc-title">{{ post.title }}</a>
+        </component>
         <p v-if="showDesc && post.description" class="toc-desc">{{ post.description }}</p>
         <div v-if="post.tags?.length" class="toc-tags">
           <a
             v-for="tag in post.tags"
             :key="tag"
-            :href="withBase(`/pages/tags/${tag.toLowerCase()}.html`)"
+            :href="withBase(`/pages/tags/${encodeURIComponent(tag.toLowerCase())}.html`)"
           >#{{ tag }}</a>
         </div>
       </div>
       <a
         v-if="post.category"
         class="toc-cat"
-        :href="withBase(`/pages/categories/${post.category}.html`)"
+        :href="withBase(`/pages/categories/${encodeURIComponent(post.category)}.html`)"
       >{{ post.category }}</a>
     </li>
   </ol>
@@ -48,8 +55,10 @@ const md = (p: Post) => `${pad(d(p).getMonth() + 1)}.${pad(d(p).getDate())}`
   gap: 14px;
 }
 .toc-row {
+  position: relative;
   display: grid;
-  grid-template-columns: 7.5rem 1fr auto;
+  /* minmax(0, 1fr)：长 URL / 长英文标题不会把卡片撑破 */
+  grid-template-columns: 7.5rem minmax(0, 1fr) auto;
   gap: 1.5rem;
   align-items: baseline;
   padding: 1.35rem 1.6rem;
@@ -77,6 +86,9 @@ const md = (p: Post) => `${pad(d(p).getMonth() + 1)}.${pad(d(p).getDate())}`
 .toc-date { color: var(--meta); white-space: nowrap; }
 .toc-cat { justify-self: end; text-align: right; color: var(--accent); white-space: nowrap; }
 .toc-cat:hover { text-decoration: underline; text-underline-offset: 3px; }
+.toc-main { overflow-wrap: anywhere; }
+/* 标题包一层 h2/h3 供读屏按标题跳转，排版沿用原来的行内链接 */
+.toc-heading { margin: 0; font-size: inherit; line-height: inherit; font-weight: inherit; }
 .toc-title {
   font-family: var(--font-serif);
   font-size: 1.4rem;
@@ -91,8 +103,11 @@ const md = (p: Post) => `${pad(d(p).getMonth() + 1)}.${pad(d(p).getDate())}`
   content: "";
   position: absolute;
   inset: 0;
+  border-radius: var(--r-md);
 }
-.toc-row { position: relative; }
+/* 键盘焦点画在铺满卡片的伪元素上，而不是只框住标题文字 */
+.toc-title:focus-visible { outline: none; }
+.toc-title:focus-visible::after { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .toc-date, .toc-cat, .toc-tags { position: relative; z-index: 1; }
 .toc-row:hover .toc-title { color: var(--accent); }
 .toc-desc {
@@ -119,7 +134,7 @@ const md = (p: Post) => `${pad(d(p).getMonth() + 1)}.${pad(d(p).getDate())}`
 .toc-tags a:hover { background: var(--accent-soft); border-color: var(--chip-border-hover); }
 @media (max-width: 640px) {
   .toc-row {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas: 'date cat' 'main main';
     gap: 0.4rem 1rem;
     padding: 1.1rem 1.15rem;

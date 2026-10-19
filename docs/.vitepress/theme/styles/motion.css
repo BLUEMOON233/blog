@@ -1,34 +1,25 @@
 /* =================================================================
  * 动效：一次性入场序列 + 尊重 reduced-motion
  * 悬停效果写在各组件里；这里只管页面加载时的淡入。
+ * 组件给需要入场的元素挂 .fx-in，并用 --fx-delay 错开（见 HomeMag / PostList）。
  * ================================================================= */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
 }
-.mag .masthead,
-.mag .lead,
-ol.toc > li.toc-row,
+.fx-in,
 .VPDoc .content-container {
   /* backwards：只在延迟期间套用起始帧；结束后不保留终帧的 transform，
      否则动画层压过 :hover 里的 translateY，卡片悬停不上浮 */
-  animation: fade-up var(--dur-in) var(--ease-in) backwards;
+  animation: fade-up var(--dur-in) var(--ease-in) var(--fx-delay, 0ms) backwards;
 }
-.mag .lead { animation-delay: 60ms; }
-ol.toc > li.toc-row:nth-child(1) { animation-delay: 120ms; }
-ol.toc > li.toc-row:nth-child(2) { animation-delay: 160ms; }
-ol.toc > li.toc-row:nth-child(3) { animation-delay: 200ms; }
-ol.toc > li.toc-row:nth-child(4) { animation-delay: 240ms; }
-ol.toc > li.toc-row:nth-child(5) { animation-delay: 280ms; }
-ol.toc > li.toc-row:nth-child(n + 6) { animation-delay: 320ms; }
 
 @media (prefers-reduced-motion: reduce) {
+  /* 一行关掉所有卡片的悬停上浮 */
+  :root { --lift: 0px; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
   }
-  .mag .lead:hover,
-  ol.toc > li.toc-row:hover,
-  .VPDocFooter .pager-link:hover { transform: none !important; }
 }

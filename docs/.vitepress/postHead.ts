@@ -1,19 +1,23 @@
 import type MarkdownIt from 'markdown-it'
+import { parseDate } from './date'
 
 // 给 posts/ 下的文章注入杂志式文章头：
 //   标题上方：栏目（分类）· 日期   —— kicker
 //   标题下方：description 作为导语 + 标签
 // 只读 frontmatter，不改 Markdown 源文件；没有 H1 的文章把文章头放在最前。
+// 注入的 HTML 会被 Vue 当模板编译，外层一律加 v-pre，description/title 里的 {{ }} 不会被当插值执行。
 const esc = (s: unknown) =>
   String(s ?? '').replace(/[&<>"']/g, (c) =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!)
   )
 
-function fmtDate(raw: unknown) {
-  const d = new Date(raw as string)
-  if (isNaN(+d)) return ''
-  return d.toISOString().slice(0, 10).replaceAll('-', '.')
+// 返回 YYYY-MM-DD（UTC）；date 缺失或无效时返回空串
+function isoDate(raw: unknown) {
+  return parseDate(raw)?.toISOString().slice(0, 10) ?? ''
 }
+
+// 路径段一律 encodeURIComponent：encodeURI 不转义 # 和 ?，“C#”这类标签会变成锚点
+const seg = (s: unknown) => encodeURIComponent(String(s))
 
 export function postHead(md: MarkdownIt) {
   md.core.ruler.push('post_head', (state) => {
@@ -23,16 +27,17 @@ export function postHead(md: MarkdownIt) {
     if (!rel.startsWith('posts/') || !fm.title) return
 
     const cat = fm.category
-      ? `<a href="/pages/categories/${encodeURI(fm.category)}.html">${esc(fm.category)}</a>`
+      ? `<a href="/pages/categories/${seg(fm.category)}.html">${esc(fm.category)}</a>`
       : ''
-    const date = fmtDate(fm.date)
-    const kicker = `<div class="post-head kicker">${cat}${date ? `<time>${date}</time>` : ''}</div>`
+    const iso = isoDate(fm.date)
+    const date = iso ? `<time datetime="${iso}">${iso.replaceAll('-', '.')}</time>` : ''
+    const kicker = `<div v-pre class="post-head kicker">${cat}${date}</div>`
     const tags = (Array.isArray(fm.tags) ? fm.tags : [])
-      .map((t: string) => `<a href="/pages/tags/${encodeURI(String(t).toLowerCase())}.html">#${esc(t)}</a>`)
+      .map((t: string) => `<a href="/pages/tags/${seg(String(t).toLowerCase())}.html">#${esc(t)}</a>`)
       .join('')
     const stand =
       fm.description || tags
-        ? `<div class="post-standfirst">${fm.description ? `<p>${esc(fm.description)}</p>` : ''}${
+        ? `<div v-pre class="post-standfirst">${fm.description ? `<p>${esc(fm.description)}</p>` : ''}${
             tags ? `<div class="post-tags">${tags}</div>` : ''
           }</div>`
         : ''
@@ -49,7 +54,7 @@ export function postHead(md: MarkdownIt) {
       toks.splice(close + 1, 0, mk(stand))
       toks.splice(i, 0, mk(kicker))
     } else {
-      toks.unshift(mk(kicker + `<h1 class="post-fallback-title">${esc(fm.title)}</h1>` + stand))
+      toks.unshift(mk(kicker + `<h1 v-pre class="post-fallback-title">${esc(fm.title)}</h1>` + stand))
     }
   })
 }
