@@ -66,6 +66,11 @@ export default defineConfig({
       { text: '关于', link: '/pages/about' }
     ],
 
+    // 右侧目录标题
+    outline: {
+      label: '目录'
+    },
+
     socialLinks: [
       { icon: 'github', link: 'https://github.com/BLUEMOON233' }
     ],
