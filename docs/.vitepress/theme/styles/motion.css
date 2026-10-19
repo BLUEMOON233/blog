@@ -10,7 +10,9 @@
 .mag .lead,
 ol.toc > li.toc-row,
 .VPDoc .content-container {
-  animation: fade-up var(--dur-in) var(--ease-in) both;
+  /* backwards：只在延迟期间套用起始帧；结束后不保留终帧的 transform，
+     否则动画层压过 :hover 里的 translateY，卡片悬停不上浮 */
+  animation: fade-up var(--dur-in) var(--ease-in) backwards;
 }
 .mag .lead { animation-delay: 60ms; }
 ol.toc > li.toc-row:nth-child(1) { animation-delay: 120ms; }
