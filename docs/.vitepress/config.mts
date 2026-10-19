@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import { genFeed } from './feed'
+import { postHead } from './postHead'
 
 const HOSTNAME = 'https://blog.bluemoon233.com'
 const SITE_TITLE = 'BLUEMOON的博客'
@@ -117,7 +118,10 @@ export default defineConfig({
 
   markdown: {
     // 官方数学公式支持（依赖 markdown-it-mathjax3），会给公式加 v-pre，避免 {{ }} 被 Vue 解析
-    math: true
+    math: true,
+    config: (md) => {
+      md.use(postHead)
+    }
   }
 
 })
