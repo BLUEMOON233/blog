@@ -39,75 +39,89 @@ const md = (p: Post) => `${pad(d(p).getMonth() + 1)}.${pad(d(p).getDate())}`
 </template>
 
 <style scoped>
+/* 文章列表：12px 圆角卡片，左日期 | 中标题+描述+标签 | 右栏目 */
 .toc {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--ink);
+  display: grid;
+  gap: 14px;
 }
 .toc-row {
   display: grid;
-  grid-template-columns: 7.5rem 1fr 6rem;
+  grid-template-columns: 7.5rem 1fr auto;
   gap: 1.5rem;
   align-items: baseline;
-  padding: 1.5rem 0;
-  border-bottom: 1px solid var(--rule);
+  padding: 1.35rem 1.6rem;
+  background: var(--card-bg);
+  border: var(--bw) solid var(--card-border);
+  border-radius: var(--r-md);
+  box-shadow: var(--card-shadow);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.toc-row:hover {
+  transform: translateY(var(--lift));
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--card-border-hover);
 }
 .toc-date,
 .toc-cat,
 .toc-tags a {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  color: var(--ink-3);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.02em;
   text-decoration: none;
   font-variant-numeric: tabular-nums;
 }
-.toc-cat {
-  justify-self: end;
-  text-align: right;
-  color: var(--accent);
-}
-.toc-cat:hover,
-.toc-tags a:hover {
-  text-decoration: underline;
-  color: var(--accent);
-}
+.toc-date { color: var(--meta); white-space: nowrap; }
+.toc-cat { justify-self: end; text-align: right; color: var(--accent); white-space: nowrap; }
+.toc-cat:hover { text-decoration: underline; text-underline-offset: 3px; }
 .toc-title {
   font-family: var(--font-serif);
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: var(--fw-head);
   line-height: 1.4;
   color: var(--ink);
   text-decoration: none;
-  background-image: linear-gradient(var(--accent), var(--accent));
-  background-size: 0 1px;
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  transition: background-size 0.3s, color 0.2s;
+  transition: color var(--dur) var(--ease);
 }
-.toc-title:hover {
-  color: var(--accent);
-  background-size: 100% 1px;
+.toc-title::after {
+  /* 整张卡片可点：标题链接的点击区域铺满卡片，标签/栏目链接浮在上层 */
+  content: "";
+  position: absolute;
+  inset: 0;
 }
+.toc-row { position: relative; }
+.toc-date, .toc-cat, .toc-tags { position: relative; z-index: 1; }
+.toc-row:hover .toc-title { color: var(--accent); }
 .toc-desc {
-  margin: 0.4rem 0 0;
+  margin: 0.45rem 0 0;
   color: var(--ink-2);
-  font-size: 0.95rem;
+  font-size: var(--fs-desc);
   line-height: 1.7;
 }
 .toc-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.2rem 0.9rem;
-  margin-top: 0.5rem;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
 }
+.toc-tags a {
+  color: var(--ink-2);
+  background: var(--inset);
+  border: 1px solid var(--chip-border);
+  border-radius: var(--r-chip);
+  padding: 0.05rem 0.55rem;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.toc-tags a:hover { background: var(--accent-soft); color: var(--accent); }
 @media (max-width: 640px) {
   .toc-row {
     grid-template-columns: 1fr auto;
     grid-template-areas: 'date cat' 'main main';
-    gap: 0.35rem 1rem;
-    padding: 1.25rem 0;
+    gap: 0.4rem 1rem;
+    padding: 1.1rem 1.15rem;
   }
   .toc-date { grid-area: date; }
   .toc-cat { grid-area: cat; }

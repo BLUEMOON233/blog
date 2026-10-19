@@ -11,15 +11,13 @@ defineProps<{ kicker?: string; title: string; note?: string }>()
 </template>
 
 <style scoped>
-.page-header {
-  margin: 0 0 2.5rem;
-}
+.page-header { margin: 0 0 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--rule); }
 .page-title {
   font-family: var(--font-serif);
-  font-size: clamp(2.4rem, 6vw, 4rem);
-  font-weight: 700;
+  font-size: clamp(2.4rem, 6vw, 3.75rem);
+  font-weight: var(--fw-head);
   line-height: 1.1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   margin: 0.6rem 0 0;
   color: var(--ink);
 }

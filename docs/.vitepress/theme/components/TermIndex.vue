@@ -16,38 +16,35 @@ defineProps<{ terms: { name: string; slug: string; count: number }[]; base: stri
 </template>
 
 <style scoped>
+/* 分类 / 标签索引：小卡片网格，衬线词条 + 等宽篇数 */
 .terms {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--ink);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-  column-gap: 2.5rem;
-}
-.terms li {
-  border-bottom: 1px solid var(--rule);
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 12px;
 }
 .terms a {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 1rem 0;
+  padding: 1rem 1.25rem;
   text-decoration: none;
   color: var(--ink);
+  background: var(--card-bg);
+  border: var(--bw) solid var(--card-border);
+  border-radius: var(--r-md);
+  box-shadow: var(--card-shadow);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
 }
-.term-name {
-  font-family: var(--font-serif);
-  font-size: 1.3rem;
-  font-weight: 600;
-  transition: color 0.2s;
+.terms a:hover {
+  transform: translateY(var(--lift));
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--card-border-hover);
 }
-.term-count {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--ink-3);
-}
-.terms a:hover .term-name {
-  color: var(--accent);
-}
+.term-name { font-family: var(--font-serif); font-size: 1.25rem; font-weight: var(--fw-head); }
+.term-count { font-family: var(--font-mono); font-size: var(--fs-meta); color: var(--meta); }
+.terms a:hover .term-name { color: var(--accent); }
 </style>
