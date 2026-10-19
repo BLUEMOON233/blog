@@ -44,7 +44,8 @@ export default defineConfig({
     const path = pageData.relativePath
       .replace(/(^|\/)index\.md$/, '$1')
       .replace(/\.md$/, '.html')
-    const url = encodeURI(`${HOSTNAME}/${path}`)
+    // 逐段 encodeURIComponent：encodeURI 不转义 #/?，“c#”这类标签页的 canonical 会被截断
+    const url = `${HOSTNAME}/${path.split('/').map(encodeURIComponent).join('/')}`
     const fm = pageData.frontmatter
     const isPost = path.startsWith('posts/')
     const head: [string, Record<string, string>][] = [
@@ -132,13 +133,29 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', href: '/logo.png' }],
-    ['meta', { name: 'theme-color', content: '#3451b2' }],
+    // 与 tokens.css 的 --paper 一致（亮 / 暗）
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#faf9f5' }],
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#1f1e1d' }],
     ['link', { rel: 'alternate', type: 'application/rss+xml', title: SITE_TITLE, href: '/feed.xml' }],
   ],
 
   markdown: {
     // 官方数学公式支持（依赖 markdown-it-mathjax3），会给公式加 v-pre，避免 {{ }} 被 Vue 解析
     math: true,
+    codeTransformers: [
+      {
+        // github-light / github-dark 的注释色 #6A737D 在暖色代码底上不足 4.5:1
+        // （亮色 #f0eee6 上 4.15，暗色 #1a1918 上 3.65），换成同色系更深 / 更浅的灰
+        name: 'blog:comment-contrast',
+        span(node) {
+          const style = node.properties.style
+          if (typeof style !== 'string') return
+          node.properties.style = style
+            .replace(/--shiki-light:#6a737d/i, '--shiki-light:#5f666e')
+            .replace(/--shiki-dark:#6a737d/i, '--shiki-dark:#8b949e')
+        }
+      }
+    ],
     config: (md) => {
       md.use(postHead)
     }
