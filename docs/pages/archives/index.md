@@ -6,6 +6,8 @@ description: BLUEMOON 的全部文章，按年份归档
 
 <script setup>
 import { data as posts } from '../../.vitepress/data/posts.data'
+import PageHeader from '../../.vitepress/theme/components/PageHeader.vue'
+import PostList from '../../.vitepress/theme/components/PostList.vue'
 const years = (() => {
   const map = new Map()
   for (const p of posts) {

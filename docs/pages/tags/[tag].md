@@ -6,6 +6,8 @@ layout: page
 import { computed } from 'vue'
 import { useData } from 'vitepress'
 import { data as posts } from '../../.vitepress/data/posts.data'
+import PageHeader from '../../.vitepress/theme/components/PageHeader.vue'
+import PostList from '../../.vitepress/theme/components/PostList.vue'
 const { params } = useData()
 const tag = computed(() => params.value.tag)
 // 标签匹配忽略大小写，显示时用原始写法

@@ -1,13 +1,14 @@
 import { defineConfig } from 'vitepress'
 import { genFeed } from './feed'
 import { postHead } from './postHead'
+import { parseDate } from './date'
 
 const HOSTNAME = 'https://blog.bluemoon233.com'
 const SITE_TITLE = 'BLUEMOON的博客'
 const SITE_DESC = '朝闻道，夕可死矣'
 
 const draftUrls = new Set<string>()
-const isDraft = (fm: Record<string, any>) => fm?.draft === true
+const isDraft = (fm?: Record<string, any>) => fm?.draft === true
 
 
 // https://vitepress.dev/reference/site-config
@@ -25,6 +26,16 @@ export default defineConfig({
   transformPageData(pageData) {
     if (isDraft(pageData.frontmatter) && pageData.relativePath.startsWith('posts/')) {
       draftUrls.add(pageData.relativePath.replace(/\.md$/, '.html'))
+    }
+    // 分类/标签详情页是动态路由，没有 frontmatter title 也没有 Markdown H1，按路由参数补标题和描述
+    const p = pageData.params
+    if (p?.category) {
+      pageData.title = `分类：${p.category}`
+      pageData.description = `「${p.category}」栏目下的全部文章`
+    }
+    if (p?.tag) {
+      pageData.title = `标签：#${p.tag}`
+      pageData.description = `标签 #${p.tag} 下的全部文章`
     }
   },
 
@@ -47,8 +58,10 @@ export default defineConfig({
       ['meta', { property: 'og:locale', content: 'zh_CN' }],
       ['meta', { name: 'twitter:card', content: 'summary' }]
     ]
-    if (isPost && fm.date) {
-      head.push(['meta', { property: 'article:published_time', content: new Date(fm.date).toISOString() }])
+    if (isPost) {
+      // date 缺失或写错时不输出发布时间，免得 toISOString() 抛错中断构建
+      const published = parseDate(fm.date)
+      if (published) head.push(['meta', { property: 'article:published_time', content: published.toISOString() }])
       for (const t of fm.tags || []) head.push(['meta', { property: 'article:tag', content: String(t) }])
     }
     if (isPost && isDraft(fm)) head.push(['meta', { name: 'robots', content: 'noindex' }])
@@ -86,12 +99,14 @@ export default defineConfig({
             prefix: true,
           }
         },
-        // 自定义渲染函数：移除标题，只保留纯文本内容
-        _render: (src, env, md) => {
-          // 渲染 Markdown 为 HTML
-          const html = md.render(src, env)
-          // 移除所有标题标签，只保留文本内容用于搜索
-          return html.replace(/<h[2-6][^>]*>.*?<\/h[1-6]>/gi, '')
+        // 自定义渲染函数：移除 h2–h6 标题，只保留纯文本内容
+        _render: async (src, env, md) => {
+          // 渲染 Markdown 为 HTML（VitePress 2 的 md 是 MarkdownItAsync，同步 render 会留下代码高亮占位符）
+          const html = await md.renderAsync(src, env)
+          // 自定义 _render 会绕过默认的 search: false 检查，这里补上，并排除草稿；返回空串即不进索引
+          if (env.frontmatter?.search === false || isDraft(env.frontmatter)) return ''
+          // 移除 h2–h6 标题标签，只保留文本内容用于搜索
+          return html.replace(/<h[2-6][^>]*>.*?<\/h[2-6]>/gi, '')
         },
         locales: {
           root: {
