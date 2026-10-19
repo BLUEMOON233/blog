@@ -1,8 +1,8 @@
 /* =================================================================
  * 文章正文：窄版心、衬线标题、文章头导语、提示框/代码/公式
  * ================================================================= */
+/* !important：对抗 VPDoc 的 scoped .VPDoc.has-aside .content-container[data-v] { max-width: 688px } 等规则 */
 .VPDoc .content-container { max-width: 680px !important; }
-.VPDoc.has-aside .container { max-width: 1080px; }
 
 /* 标题 */
 .vp-doc h1, .vp-doc h2, .vp-doc h3, .vp-doc h4 {
@@ -44,7 +44,7 @@
 .vp-doc p { margin: 20px 0; }
 .vp-doc strong { color: var(--ink); }
 .vp-doc hr { border-top: 1px solid var(--rule); width: 30%; margin: 48px auto; }
-.vp-doc table { font-size: 15px; }
+.vp-doc table { font-size: var(--fs-small); }
 
 /* 正文链接：1px 下划线，悬停加粗变色 */
 .vp-doc p a, .vp-doc li a, .vp-doc td a {
@@ -75,16 +75,15 @@
   max-width: 100%;
   height: auto;
   border-radius: var(--r-sm);
+  filter: var(--img-dim);
 }
-.dark .vp-doc img { filter: brightness(0.92); }
 
 /* 行内代码：暖褐字 + 浅橙底 */
 .vp-doc :not(pre) > code {
   color: var(--code-inline);
-  background: rgb(217 119 87 / 11%);
+  background: var(--code-inline-bg);
   border-radius: var(--r-xs);
 }
-.dark .vp-doc :not(pre) > code { background: rgb(217 119 87 / 16%); }
 
 /* 代码块：扁平细边 */
 .vp-doc div[class*="language-"] {
@@ -93,7 +92,7 @@
 }
 .vp-doc div[class*="language-"] > span.lang { font-size: var(--fs-meta); }
 
-/* 提示框 ::: tip / info / details */
+/* 提示框 ::: tip / info / warning / danger / details */
 .vp-doc .custom-block {
   border: var(--bw) solid var(--card-border);
   border-left: 4px solid var(--ink-3);
@@ -101,12 +100,15 @@
   background: var(--card-bg);
 }
 .vp-doc .custom-block.tip { border-left-color: var(--clay); }
+/* warning / danger 保留 VitePress 的语义色左边框，不和 info 混成一样 */
+.vp-doc .custom-block.warning { border-left-color: var(--vp-c-warning-1); }
+.vp-doc .custom-block.danger { border-left-color: var(--vp-c-danger-1); }
 .vp-doc .custom-block .custom-block-title {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   font-weight: 500;
 }
-.vp-doc .custom-block p, .vp-doc .custom-block li { font-size: 15px; }
+.vp-doc .custom-block p, .vp-doc .custom-block li { font-size: var(--fs-small); }
 
 /* 行间公式过宽时横向滚动 */
 .vp-doc mjx-container[display="true"] {
@@ -123,7 +125,7 @@
   gap: 0.25rem 1rem;
   margin-bottom: 1rem;
 }
-.vp-doc .post-head.kicker a { color: var(--accent); text-decoration: none; background: none; }
+.vp-doc .post-head.kicker a { color: var(--accent); text-decoration: none; }
 .vp-doc .post-head.kicker time::before {
   content: "/";
   margin-right: 1rem;

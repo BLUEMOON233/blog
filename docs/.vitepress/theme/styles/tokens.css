@@ -2,6 +2,7 @@
  * 设计变量：打字机风（暖象牙底 · 衬线标题 · 等宽元信息 · 赭橙强调）
  * 色值参考 Anthropic 公开仓库里的设计 token（MIT / Apache-2.0），
  * 只取颜色与尺寸数值；不含其自有字体、logo 或商标素材。
+ * 所有颜色只在这里定义；亮暗差异只写在下面的 .dark 里。
  * ================================================================= */
 :root {
   /* 颜色 */
@@ -14,9 +15,12 @@
   --clay: #d97757;          /* 色块、短线、选区 */
   --on-clay: #141413;       /* clay 色块上的文字，亮暗一致，对比 5.9 */
   --accent: #a9502f;        /* 小字与链接：象牙底 5.1 / 白卡片 5.4 / inset 4.7 */
-  --accent-soft: rgb(217 119 87 / 15%);
+  --accent-soft: color-mix(in srgb, var(--clay) 15%, transparent);
   --focus-ring: var(--accent); /* 键盘焦点 outline，象牙底 5.1 */
+  --selection-bg: color-mix(in srgb, var(--clay) 22%, transparent);
   --inset: #f0eee6;
+  --sunken: var(--inset);   /* 代码块、bg-alt 等下沉面；暗色比 paper 更深 */
+  --img-dim: none;          /* 正文图片滤镜；暗色略压亮度 */
 
   /* 卡片 */
   --card-bg: #ffffff;
@@ -27,6 +31,7 @@
   --chip-border: rgb(20 20 19 / 8%);
   --chip-border-hover: color-mix(in srgb, var(--clay) 45%, transparent);
   --code-inline: #8a5a3c;
+  --code-inline-bg: color-mix(in srgb, var(--clay) 11%, transparent);
 
   /* 圆角阶：层级不同，圆角不同 */
   --r-xs: 4px;
@@ -36,8 +41,9 @@
   --r-lg: 20px;
   --bw: 1.5px;
 
-  /* 字号阶：正文 16.5px，所有元信息统一 14px */
+  /* 字号阶：正文 16.5px，所有元信息统一 14px；表格、提示框正文、归档年份等次级文字 15px */
   --fs-meta: 14px;
+  --fs-small: 15px;
   --fs-body: 16.5px;
   --fs-desc: 15.5px;
   --fs-lede: 1.3rem;
@@ -59,25 +65,34 @@
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas,
     "Noto Sans Mono CJK SC", monospace;
 
-  /* 映射到 VitePress 默认主题变量 */
+  /* 映射到 VitePress 默认主题变量（都引用上面的 token，亮暗自动跟随） */
   --vp-font-family-base: var(--font-sans);
   --vp-font-family-mono: var(--font-mono);
   --vp-c-bg: var(--paper);
-  --vp-c-bg-alt: var(--inset);
+  --vp-c-bg-alt: var(--sunken);
   --vp-c-bg-soft: var(--inset);
+  --vp-c-bg-elv: var(--card-bg);        /* 导航“…”弹出菜单等浮层 */
   --vp-c-text-1: var(--ink);
   --vp-c-text-2: var(--ink-2);
   --vp-c-text-3: var(--ink-3);
   --vp-c-divider: var(--rule);
   --vp-c-gutter: var(--rule);
+  --vp-c-border: var(--card-border);
+  /* 搜索命中底、外观开关底、提示框内行内代码底：暖灰替代默认的蓝灰 */
+  --vp-c-default-soft: color-mix(in srgb, var(--ink-3) 14%, transparent);
   --vp-c-brand-1: var(--accent);
   --vp-c-brand-2: var(--clay);
-  --vp-c-brand-3: #c6613f;
   --vp-c-brand-soft: var(--accent-soft);
   --vp-nav-bg-color: color-mix(in srgb, var(--paper) 85%, transparent);
-  --vp-code-block-bg: var(--inset);
+  --vp-code-block-bg: var(--sunken);
   --vp-button-brand-bg: var(--ink);
+  --vp-button-brand-text: var(--paper);
   --vp-button-brand-hover-bg: var(--accent);
+}
+
+/* 小屏上大卡片圆角收一档 */
+@media (max-width: 640px) {
+  :root { --r-lg: 16px; }
 }
 
 .dark {
@@ -88,8 +103,10 @@
   --meta: #b0aea5;
   --rule: #30302e;
   --accent: #e08a6d;
-  --accent-soft: rgb(217 119 87 / 18%);
+  --accent-soft: color-mix(in srgb, var(--clay) 18%, transparent);
   --inset: #262624;
+  --sunken: #1a1918;
+  --img-dim: brightness(0.92);
 
   --card-bg: #262624;
   --card-border: #3d3d3a;
@@ -98,8 +115,5 @@
   --card-shadow-hover: 0 10px 30px rgb(0 0 0 / 45%);
   --chip-border: rgb(250 249 245 / 8%);
   --code-inline: #e8b49a;
-
-  --vp-c-bg-alt: #1a1918;
-  --vp-code-block-bg: #1a1918;
-  --vp-button-brand-text: #1f1e1d;
+  --code-inline-bg: color-mix(in srgb, var(--clay) 16%, transparent);
 }
