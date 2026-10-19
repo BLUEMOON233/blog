@@ -1,0 +1,87 @@
+/* =================================================================
+ * 全站基础：导航、元信息、焦点、目录、页脚
+ * ================================================================= */
+::selection { background: rgb(217 119 87 / 22%); }
+
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(217 119 87 / 35%);
+  border-radius: var(--r-xs);
+}
+
+/* 元信息（日期、栏目、kicker）：等宽、14px、不全大写 */
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.02em;
+  color: var(--meta);
+}
+.kicker a { color: var(--accent); text-decoration: none; }
+.kicker a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.kicker time { color: var(--meta); }
+
+/* 导航：毛玻璃 + 衬线站名 */
+.VPNav .VPNavBar .content-body,
+.VPNav .VPNavBar:not(.home.top) .content-body {
+  background: var(--vp-nav-bg-color);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  backdrop-filter: saturate(160%) blur(12px);
+}
+.VPNavBar .title {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: var(--fw-head);
+  letter-spacing: -0.01em;
+}
+.VPNavBarMenuLink,
+.VPNavScreenMenuLink {
+  font-size: var(--fs-meta) !important;
+  letter-spacing: 0.04em;
+}
+.VPNavBarMenuLink.active {
+  color: var(--ink) !important;
+  text-decoration: underline 2px var(--clay);
+  text-underline-offset: 6px;
+}
+.VPNavBarSearch .DocSearch-Button-Placeholder,
+.VPNavBarSearch .DocSearch-Button-Key { font-size: var(--fs-meta); }
+
+/* 文章右侧目录 */
+.VPDocAsideOutline .outline-title {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--meta);
+}
+.VPDocAsideOutline .outline-link { font-size: var(--fs-meta); }
+.VPDocAsideOutline .outline-marker { background-color: var(--clay); }
+.VPLocalNav .menu-text,
+.VPLocalNavOutlineDropdown button { font-size: var(--fs-meta); }
+
+/* 页脚、上一篇/下一篇、编辑信息、跳到正文 */
+.VPFooter .message,
+.VPFooter .copyright,
+.VPDocFooter .edit-info,
+.VPDocFooter .pager-link .desc,
+.VPLastUpdated,
+.VPSkipLink { font-size: var(--fs-meta) !important; }
+
+.VPDocFooter .pager-link {
+  background: var(--card-bg);
+  border: var(--bw) solid var(--card-border) !important;
+  border-radius: var(--r-md) !important;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.VPDocFooter .pager-link:hover {
+  transform: translateY(var(--lift));
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--card-border-hover) !important;
+}
+.VPDocFooter .pager-link .title { font-family: var(--font-serif); font-weight: var(--fw-head); }
+
+/* 本地搜索弹窗里的小字 */
+.VPLocalSearchBox .titles,
+.VPLocalSearchBox .search-keyboard-shortcuts,
+.VPLocalSearchBox .excerpt { font-size: var(--fs-meta) !important; }
