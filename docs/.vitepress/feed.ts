@@ -2,17 +2,26 @@ import path from 'node:path'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { Feed } from 'feed'
 import { createContentLoader, type SiteConfig } from 'vitepress'
-import { parseDate } from './date'
+import { parseDate } from './date.ts'
+import { FEED_START, FEED_END } from './postHead.ts'
 
-// 从构建好的 dist/posts/**.html 里取正文：.vp-doc 里的图片已是带 hash 的 /assets/xxx 地址。
-// 结构为 <div class="vp-doc …"><div>正文</div></div></main>；匹配不到时返回 undefined，只输出摘要。
+// 从构建好的 dist/posts/**.html 里取正文（图片已是带 hash 的 /assets/xxx 地址）：
+// 截取 postHead.ts 注入的起止标记之间的内容，不含文章头。找不到时打印警告，这篇只输出摘要。
+const markerRe = (tag: string) => new RegExp(tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(' hidden>', '[^>]*>'))
+const START_RE = markerRe(FEED_START)
+const END_RE = markerRe(FEED_END)
+
 function readBuiltContent(outDir: string, url: string, hostname: string) {
   const file = path.join(outDir, url)
-  if (!existsSync(file)) return undefined
-  const html = readFileSync(file, 'utf-8')
-  const m = html.match(/<div[^>]*class="vp-doc[^"]*"[^>]*><div>([\s\S]*)<\/div><\/div><\/main>/)
-  if (!m) return undefined
-  return m[1]
+  const html = existsSync(file) ? readFileSync(file, 'utf-8') : ''
+  const start = html.match(START_RE)
+  const end = start ? html.slice(start.index! + start[0].length).match(END_RE) : null
+  if (!start || !end) {
+    console.warn(`[feed] ${url}：没找到正文起止标记，RSS 里这篇只有摘要`)
+    return undefined
+  }
+  const from = start.index! + start[0].length
+  return html.slice(from, from + end.index!)
     // 去掉标题旁的空锚点和代码块的复制按钮
     .replace(/<a class="header-anchor"[^>]*>[\s\S]*?<\/a>/g, '')
     .replace(/<button title="[^"]*" class="copy">[\s\S]*?<\/button>/g, '')
