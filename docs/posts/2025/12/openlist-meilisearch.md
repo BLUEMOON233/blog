@@ -4,8 +4,8 @@ date: 2025-12-02
 category: 部署
 tags:
   - 部署
-  - openlist
-  - meilisearch
+  - OpenList
+  - Meilisearch
 description: 部署meilisearch作为Openlist的后端索引
 ---
 

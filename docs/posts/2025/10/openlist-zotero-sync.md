@@ -150,9 +150,6 @@ Zotero的官方同步选项中就有WebDAV这一项（PS: 好像也就这一个�
 ```
 并且在下方填写具有WebDAV权限的用户名和密码（和OpenList中的用户组保持一致）点击验证服务器就可以了！
 
-![Zotero设置](assets/image1.png)
+![Zotero设置](assets/OpenList配置Zotero同步-设置.png)
 
 另外注意你的服务器代理和DNS解析，不要让WebDAV服务超时就好了！
-
-
-
