@@ -1,7 +1,7 @@
 ---
 title: OptTrajDiff学习笔记
 date: 2025-11-28
-category: 论文笔记
+category: 论文
 tags:
   - 轨迹生成
 description: 对OptTrajDiff的论文的学习总结

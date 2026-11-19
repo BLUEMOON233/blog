@@ -1,7 +1,7 @@
 ---
 title: TransDiffuser学习笔记
 date: 2025-11-28
-category: 论文笔记
+category: 论文
 tags:
   - 轨迹生成
   - 自动驾驶

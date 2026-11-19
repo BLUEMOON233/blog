@@ -1,7 +1,7 @@
 ---
 title: 使用Samba在macOS中挂载Linux目录
 date: 2026-02-04
-category: 部署
+category: 折腾
 tags:
   - 部署
   - Samba

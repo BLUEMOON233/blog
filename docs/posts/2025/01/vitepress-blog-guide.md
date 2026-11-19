@@ -1,7 +1,7 @@
 ---
 title: VitePress 博客系统搭建指南
 date: 2025-01-16
-category: 前端开发
+category: 折腾
 tags:
   - VitePress
   - Vue

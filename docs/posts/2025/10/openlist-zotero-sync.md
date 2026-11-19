@@ -1,7 +1,7 @@
 ---
 title: 使用OpenList配置Zotero同步
 date: 2025-10-17
-category: 部署
+category: 折腾
 tags:
   - OpenList
   - Zotero
