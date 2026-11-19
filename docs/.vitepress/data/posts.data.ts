@@ -1,5 +1,5 @@
 import { createContentLoader } from 'vitepress'
-import { parseDate } from '../date'
+import { parseDate } from '../date.ts'
 
 export interface Post {
   title: string

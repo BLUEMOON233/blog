@@ -1,26 +1,12 @@
-import { createContentLoader } from 'vitepress'
-import { parseDate } from '../../.vitepress/date'
+import { readPostMeta } from '../../.vitepress/postMeta.ts'
 
-interface Post {
-  url: string
-  frontmatter: Record<string, any>
-}
-
+// VitePress 官方的动态路由写法：watch 列出依赖的文章（相对本文件），
+// VitePress 把匹配到的文件传给 paths()；开发时文章增删改会自动重新生成分类页。
 export default {
-  async paths() {
-    const posts = await createContentLoader('posts/**/*.md').load() as Post[]
-
-    // 收集所有分类（与 posts.data 一致：跳过草稿和没有有效 date 的文章）
+  watch: ['../../posts/**/*.md'],
+  paths(files: string[]) {
     const categories = new Set<string>()
-    posts.filter(post => post.frontmatter.draft !== true && parseDate(post.frontmatter.date)).forEach(post => {
-      if (post.frontmatter.category) {
-        categories.add(post.frontmatter.category)
-      }
-    })
-
-    // 为每个分类生成路径
-    return Array.from(categories).map(category => ({
-      params: { category }
-    }))
+    for (const fm of readPostMeta(files)) if (fm.category) categories.add(String(fm.category))
+    return [...categories].map((category) => ({ params: { category } }))
   }
 }

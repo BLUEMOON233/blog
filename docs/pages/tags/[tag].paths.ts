@@ -1,28 +1,15 @@
-import { createContentLoader } from 'vitepress'
-import { parseDate } from '../../.vitepress/date'
+import { readPostMeta } from '../../.vitepress/postMeta.ts'
 
-interface Post {
-  url: string
-  frontmatter: Record<string, any>
-}
-
+// VitePress 官方的动态路由写法：watch 列出依赖的文章（相对本文件），
+// VitePress 把匹配到的文件传给 paths()；开发时文章增删改会自动重新生成标签页。
+// 标签不区分大小写：路由参数用小写，页面上显示文章里的原始写法。
 export default {
-  async paths() {
-    const posts = await createContentLoader('posts/**/*.md').load() as Post[]
-
-    // 收集所有标签（与 posts.data 一致：跳过草稿和没有有效 date 的文章）
+  watch: ['../../posts/**/*.md'],
+  paths(files: string[]) {
     const tags = new Set<string>()
-    posts.filter(post => post.frontmatter.draft !== true && parseDate(post.frontmatter.date)).forEach(post => {
-      if (post.frontmatter.tags && Array.isArray(post.frontmatter.tags)) {
-        post.frontmatter.tags.forEach((tag: string) => {
-          tags.add(tag.toLowerCase())
-        })
-      }
-    })
-
-    // 为每个标签生成路径
-    return Array.from(tags).map(tag => ({
-      params: { tag }
-    }))
+    for (const fm of readPostMeta(files)) {
+      for (const t of Array.isArray(fm.tags) ? fm.tags : []) tags.add(String(t).toLowerCase())
+    }
+    return [...tags].map((tag) => ({ params: { tag } }))
   }
 }

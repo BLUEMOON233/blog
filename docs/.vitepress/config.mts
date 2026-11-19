@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
-import { genFeed } from './feed'
-import { postHead } from './postHead'
-import { parseDate } from './date'
+import { genFeed } from './feed.ts'
+import { postHead } from './postHead.ts'
+import { parseDate } from './date.ts'
 
 const HOSTNAME = 'https://blog.bluemoon233.com'
 const SITE_TITLE = 'BLUEMOON的博客'
