@@ -4,6 +4,7 @@
 // 发布规则：顶层文件夹（论文、折腾、课程、项目……）里的笔记都会发布，分类就是顶层文件夹名；
 // Inbox（草稿）、Attachments、模板目录和仓库根目录下的笔记不发布。
 // 属性都可选：标题默认文件名，网址默认文件名（写了 slug 就用 slug），
+// 正文不以一级标题开头时自动补一个（VitePress 默认主题不显示 frontmatter 的 title），
 // 没写 date 的笔记第一次发布时，脚本会把当天日期写回笔记。
 //
 // Obsidian 仓库是文章的唯一源头：docs/posts/ 下的 .md 文件和 assets/ 目录完全由本脚本管理，
@@ -362,7 +363,9 @@ const desired = new Map() // posts 下的相对路径 → { kind: 'md', content,
 const assetOwners = new Map()
 for (const p of byOut.values()) {
   const ctx = { note: p.note, dir: path.posix.dirname(p.out), assets: assetOwners }
-  const body = convertBody(p.body, ctx).replace(/^\s*\n/, '').replace(/\s*$/, '\n')
+  let body = convertBody(p.body, ctx).replace(/^\s*\n/, '').replace(/\s*$/, '\n')
+  // VitePress 默认主题的文章页不显示 frontmatter 的 title，正文没有一级标题时补上
+  if (!/^#[ \t]/.test(body)) body = `# ${p.meta.title}\n\n${body}`
   const fm = stringifyYaml(p.meta, { lineWidth: 0 })
   desired.set(p.out, { kind: 'md', content: `---\n${fm}---\n\n${body}`, from: p.note.rel, title: p.meta.title })
 }

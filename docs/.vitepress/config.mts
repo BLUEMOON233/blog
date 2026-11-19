@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitepress'
 import { genFeed } from './feed.ts'
-import { postHead } from './postHead.ts'
+import { feedMarkers } from './feedMarkers.ts'
 import { parseDate } from './date.ts'
 
 const HOSTNAME = 'https://blog.bluemoon233.com'
@@ -126,9 +126,6 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', href: '/logo.png' }],
-    // 与 tokens.css 的 --paper 一致（亮 / 暗）
-    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#faf9f5' }],
-    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#1f1e1d' }],
     ['link', { rel: 'alternate', type: 'application/rss+xml', title: SITE_TITLE, href: '/feed.xml' }],
   ],
 
@@ -136,7 +133,7 @@ export default defineConfig({
     // 官方数学公式支持（依赖 markdown-it-mathjax3），会给公式加 v-pre，避免 {{ }} 被 Vue 解析
     math: true,
     config: (md) => {
-      md.use(postHead)
+      md.use(feedMarkers)
     }
   }
 

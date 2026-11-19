@@ -1,20 +1,17 @@
----
-layout: page
----
-
 <script setup>
 import { computed } from 'vue'
-import { useData } from 'vitepress'
+import { useData, withBase } from 'vitepress'
 import { data as posts } from '../../.vitepress/data/posts.data'
-import PageHeader from '../../.vitepress/theme/components/PageHeader.vue'
-import PostList from '../../.vitepress/theme/components/PostList.vue'
 const { params } = useData()
-const cat = computed(() => params.value.category)
-const list = computed(() => posts.filter(p => p.category === cat.value))
+const list = computed(() => posts.filter((p) => p.category === params.value.category))
 </script>
 
-<div class="list-page">
-  <PageHeader :title="cat" :note="`共 ${list.length} 篇`"><template #kicker><span lang="en">Section</span> · 分类</template></PageHeader>
-  <PostList :posts="list" :heading-level="2" />
-  <a class="list-back kicker" href="/pages/categories/">返回全部分类</a>
-</div>
+# 分类：{{ $params.category }}
+
+共 {{ list.length }} 篇。
+
+<ul>
+<li v-for="p in list" :key="p.url"><a :href="withBase(p.url)">{{ p.title }}</a> · {{ p.date.iso }}</li>
+</ul>
+
+[全部分类](/pages/categories/)

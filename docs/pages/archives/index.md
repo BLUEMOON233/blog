@@ -1,33 +1,26 @@
 ---
-layout: page
 title: 文章归档
-description: BLUEMOON 的全部文章，按年份归档
 ---
 
 <script setup>
+import { withBase } from 'vitepress'
 import { data as posts } from '../../.vitepress/data/posts.data'
-import PageHeader from '../../.vitepress/theme/components/PageHeader.vue'
-import PostList from '../../.vitepress/theme/components/PostList.vue'
-const years = (() => {
-  const map = new Map()
-  for (const p of posts) {
-    const y = p.date.iso.slice(0, 4) // UTC 年份，与 PostList 显示一致
-    if (!map.has(y)) map.set(y, [])
-    map.get(y).push(p)
-  }
-  return [...map.entries()]
-})()
+// 按年份分组（posts 已按日期倒序）
+const years = new Map()
+for (const p of posts) {
+  const y = p.date.iso.slice(0, 4)
+  if (!years.has(y)) years.set(y, [])
+  years.get(y).push(p)
+}
 </script>
 
-<style scoped>
-.year { font-family: var(--font-mono); font-size: var(--fs-small); font-weight: 500; letter-spacing: .06em; color: var(--ink); margin: 0 0 1rem; }
-section + section { margin-top: 3rem; }
-</style>
+# 文章归档
 
-<div class="list-page">
-  <PageHeader kicker="Archive" title="文章归档" :note="`共 ${posts.length} 篇，按年份倒序`" />
-  <section v-for="[year, list] in years" :key="year">
-    <h2 class="year">{{ year }}</h2>
-    <PostList :posts="list" :show-year="false" />
-  </section>
-</div>
+共 {{ posts.length }} 篇。
+
+<template v-for="[year, list] in years" :key="year">
+<h2 :id="`_${year}`">{{ year }}</h2>
+<ul>
+<li v-for="p in list" :key="p.url"><a :href="withBase(p.url)">{{ p.title }}</a> · {{ p.date.iso }}</li>
+</ul>
+</template>

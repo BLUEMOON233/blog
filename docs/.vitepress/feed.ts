@@ -3,10 +3,10 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { Feed } from 'feed'
 import { createContentLoader, type SiteConfig } from 'vitepress'
 import { parseDate } from './date.ts'
-import { FEED_START, FEED_END } from './postHead.ts'
+import { FEED_START, FEED_END } from './feedMarkers.ts'
 
 // 从构建好的 dist/posts/**.html 里取正文（图片已是带 hash 的 /assets/xxx 地址）：
-// 截取 postHead.ts 注入的起止标记之间的内容，不含文章头。找不到时打印警告，这篇只输出摘要。
+// 截取 feedMarkers.ts 注入的起止标记之间的内容，不含标题。找不到时打印警告，这篇只输出摘要。
 const markerRe = (tag: string) => new RegExp(tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(' hidden>', '[^>]*>'))
 const START_RE = markerRe(FEED_START)
 const END_RE = markerRe(FEED_END)

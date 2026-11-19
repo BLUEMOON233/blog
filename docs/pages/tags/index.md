@@ -1,23 +1,23 @@
 ---
-layout: page
 title: 标签
-description: 按标签浏览 BLUEMOON 的文章
 ---
 
 <script setup>
+import { withBase } from 'vitepress'
 import { data as posts } from '../../.vitepress/data/posts.data'
-import PageHeader from '../../.vitepress/theme/components/PageHeader.vue'
-import TermIndex from '../../.vitepress/theme/components/TermIndex.vue'
-const m = new Map()
+// 标签不区分大小写：按小写归并，显示第一次出现时的写法
+const tags = new Map()
 for (const p of posts) for (const t of p.tags || []) {
-  const k = t.toLowerCase()
-  const e = m.get(k) || { name: t, slug: k, count: 0 }
-  e.count++; m.set(k, e)
+  const key = t.toLowerCase()
+  const e = tags.get(key) || { name: t, key, count: 0 }
+  e.count++
+  tags.set(key, e)
 }
-const terms = [...m.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+const list = [...tags.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
 </script>
 
-<div class="list-page">
-  <PageHeader kicker="Index" title="标签" :note="`${terms.length} 个标签`" />
-  <TermIndex :terms="terms" base="/pages/tags/" prefix="#" />
-</div>
+# 标签
+
+<ul>
+<li v-for="t in list" :key="t.key"><a :href="withBase(`/pages/tags/${encodeURIComponent(t.key)}.html`)">#{{ t.name }}</a>（{{ t.count }} 篇）</li>
+</ul>
