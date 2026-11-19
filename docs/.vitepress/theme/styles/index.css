@@ -1,0 +1,5 @@
+/* 样式入口。按「官方变量 → 正文 → 内部覆盖」的顺序引入，后面的层可以依赖前面的变量。
+ * ② 官方插槽组件的样式写在各自的 .vue 文件里（scoped）。分层说明见 ../README.md。 */
+@import './tokens.css';
+@import './doc.css';
+@import './overrides.css';

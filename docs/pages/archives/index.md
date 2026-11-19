@@ -1,10 +1,12 @@
 ---
 title: 文章归档
+# 列表页：「最后更新」是本页源文件的 git 时间，与文章无关，不显示
+lastUpdated: false
 ---
 
 <script setup>
-import { withBase } from 'vitepress'
 import { data as posts } from '../../.vitepress/data/posts.data'
+import PostList from '../../.vitepress/theme/components/PostList.vue'
 // 按年份分组（posts 已按日期倒序）
 const years = new Map()
 for (const p of posts) {
@@ -20,7 +22,5 @@ for (const p of posts) {
 
 <template v-for="[year, list] in years" :key="year">
 <h2 :id="`_${year}`">{{ year }}</h2>
-<ul>
-<li v-for="p in list" :key="p.url"><a :href="withBase(p.url)">{{ p.title }}</a> · {{ p.date.iso }}</li>
-</ul>
+<PostList :posts="list" />
 </template>

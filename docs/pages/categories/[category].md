@@ -1,17 +1,21 @@
+---
+# 列表页：「最后更新」是本页源文件的 git 时间，与文章无关，不显示
+lastUpdated: false
+---
+
 <script setup>
 import { computed } from 'vue'
-import { useData, withBase } from 'vitepress'
+import { useData } from 'vitepress'
 import { data as posts } from '../../.vitepress/data/posts.data'
+import PostList from '../../.vitepress/theme/components/PostList.vue'
 const { params } = useData()
 const list = computed(() => posts.filter((p) => p.category === params.value.category))
 </script>
 
-# 分类：{{ $params.category }}
+# {{ $params.category }}
 
-共 {{ list.length }} 篇。
+分类，共 {{ list.length }} 篇。
 
-<ul>
-<li v-for="p in list" :key="p.url"><a :href="withBase(p.url)">{{ p.title }}</a> · {{ p.date.iso }}</li>
-</ul>
+<PostList :posts="list" :show-category="false" />
 
 [全部分类](/pages/categories/)

@@ -1,0 +1,57 @@
+/* =================================================================
+ * ③ 正文样式（.vp-doc）
+ * .vp-doc 是 VitePress 给 Markdown 正文容器加的 class，不属于组件内部实现，
+ * 但官方没有承诺它保持不变。这里只写和默认值不同的属性，按元素分组；
+ * 每组对应的默认规则见 ../README.md「正文样式清单」，升级时逐条核对。
+ * ================================================================= */
+
+/* D1 标题：衬线体、常规字重、比正文深一级（VitePress 没有标题字体变量） */
+.vp-doc :is(h1, h2, h3) {
+  font-family: var(--blog-font-serif);
+  font-weight: 400;
+  color: var(--blog-ink);
+}
+.vp-doc h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.vp-doc h2 {
+  font-size: 1.625rem; /* 默认的上边框细分隔线和间距保留 */
+}
+
+/* D2 正文：字号略大、行距更松。字号设在容器上，提示框和表格仍按各自的规则 */
+.vp-doc {
+  font-size: 16.5px;
+}
+.vp-doc :is(p, li) {
+  line-height: 1.85;
+}
+.vp-doc strong {
+  color: var(--blog-ink);
+}
+
+/* D3 链接：常规字重，细下划线离字 4px，悬停加粗下划线 */
+.vp-doc a {
+  font-weight: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.vp-doc a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* D4 图片圆角 */
+.vp-doc img {
+  border-radius: 8px;
+}
+
+/* 小屏 */
+@media (max-width: 640px) {
+  .vp-doc h1 {
+    font-size: 1.875rem;
+  }
+  .vp-doc h2 {
+    font-size: 1.375rem;
+  }
+}

@@ -1,17 +1,13 @@
 ---
 title: 分类
+# 列表页：「最后更新」是本页源文件的 git 时间，与文章无关，不显示
+lastUpdated: false
 ---
 
 <script setup>
-import { withBase } from 'vitepress'
-import { data as posts } from '../../.vitepress/data/posts.data'
-const counts = new Map()
-for (const p of posts) if (p.category) counts.set(p.category, (counts.get(p.category) || 0) + 1)
-const categories = [...counts].sort((a, b) => b[1] - a[1])
+import CategoryOverview from '../../.vitepress/theme/components/CategoryOverview.vue'
 </script>
 
 # 分类
 
-<ul>
-<li v-for="[name, n] in categories" :key="name"><a :href="withBase(`/pages/categories/${encodeURIComponent(name)}.html`)">{{ name }}</a>（{{ n }} 篇）</li>
-</ul>
+<CategoryOverview />

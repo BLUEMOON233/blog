@@ -33,7 +33,8 @@ export default createContentLoader('posts/**/*.md', {
         category: frontmatter.category,
         tags: frontmatter.tags || []
       }))
-      .sort((a, b) => b.date.time - a.date.time)
+      // 日期从新到旧，同一天按网址（与 postMeta.ts 的 comparePosts 一致，上一篇 / 下一篇按同样的顺序）
+      .sort((a, b) => b.date.time - a.date.time || a.url.localeCompare(b.url))
   }
 })
 

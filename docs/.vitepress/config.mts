@@ -1,11 +1,18 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { defineConfig } from 'vitepress'
 import { genFeed } from './feed.ts'
 import { feedMarkers } from './feedMarkers.ts'
 import { parseDate } from './date.ts'
+import { listPosts, type PostEntry } from './postMeta.ts'
+import { readingStats } from './readingStats.ts'
 
 const HOSTNAME = 'https://blog.bluemoon233.com'
 const SITE_TITLE = 'BLUEMOON的博客'
 const SITE_DESC = '朝闻道，夕可死矣'
+
+// 全部文章（新到旧），第一次用到时读取一次。开发服务器运行中新增文章，上一篇 / 下一篇要重启后才更新
+let posts: PostEntry[] | undefined
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -13,11 +20,28 @@ export default defineConfig({
   title: SITE_TITLE,
   description: SITE_DESC,
 
+  // 文末「最后更新于」，时间取自 git 提交。Vercel 默认浅克隆，需设环境变量 VERCEL_DEEP_CLONE=true
+  lastUpdated: true,
+
   sitemap: {
     hostname: HOSTNAME
   },
 
-  transformPageData(pageData) {
+  transformPageData(pageData, { siteConfig }) {
+    // 文章：标题上方信息行用的字数 / 阅读时间，以及文末的上一篇（更早）/ 下一篇（更新）
+    if (pageData.relativePath.startsWith('posts/')) {
+      const fm = pageData.frontmatter
+      fm.readingStats = readingStats(readFileSync(join(siteConfig.srcDir, pageData.relativePath), 'utf8'))
+      posts ??= listPosts(siteConfig.srcDir)
+      const i = posts.findIndex((p) => p.url === '/' + pageData.relativePath.replace(/\.md$/, '.html'))
+      if (i >= 0) {
+        const older = posts[i + 1]
+        const newer = posts[i - 1]
+        fm.prev = older ? { text: older.title, link: older.url } : false
+        fm.next = newer ? { text: newer.title, link: newer.url } : false
+      }
+    }
+
     // 分类/标签详情页是动态路由，没有 frontmatter title 也没有 Markdown H1，按路由参数补标题和描述
     const p = pageData.params
     if (p?.category) {
@@ -62,6 +86,8 @@ export default defineConfig({
   buildEnd: (config) => genFeed(config, { hostname: HOSTNAME, title: SITE_TITLE, description: SITE_DESC }),
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: '/logo.png',
+
     nav: [
       { text: '首页', link: '/' },
       { text: '文章', link: '/pages/archives/' },
@@ -73,6 +99,17 @@ export default defineConfig({
     // 右侧目录标题
     outline: {
       label: '目录'
+    },
+
+    lastUpdated: {
+      text: '最后更新于',
+      formatOptions: { dateStyle: 'medium', timeStyle: 'short' }
+    },
+
+    // 文末翻页的小标题；每篇的前后篇由上面的 transformPageData 设置
+    docFooter: {
+      prev: '上一篇',
+      next: '下一篇'
     },
 
     socialLinks: [
@@ -126,6 +163,9 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', href: '/logo.png' }],
+    // 手机浏览器地址栏颜色，与 theme/styles/tokens.css 的 --vp-c-bg 一致（亮 / 暗）
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#faf9f5' }],
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#1f1e1b' }],
     ['link', { rel: 'alternate', type: 'application/rss+xml', title: SITE_TITLE, href: '/feed.xml' }],
   ],
 

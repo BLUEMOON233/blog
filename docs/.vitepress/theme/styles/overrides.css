@@ -1,0 +1,25 @@
+/* =================================================================
+ * ④ 内部样式覆盖
+ * 这里的选择器指向 VitePress 默认主题的内部组件（.VP*）或第三方库，不在官方保证范围内。
+ * 每一条都要在 ../README.md「内部样式覆盖清单」登记编号、原因和核对过的版本；
+ * 新增或删除时同步更新清单。
+ * ================================================================= */
+
+/* O1 导航栏 logo 圆角。logo.png 自带白底，方角在米色底上很突兀。
+ *    默认：VPNavBarTitle 的 .logo 没有圆角。 */
+.VPNavBarTitle .logo {
+  border-radius: 8px;
+}
+
+/* O2 右侧目录的当前位置标记用点缀色。
+ *    默认：VPDocAsideOutline 的 .outline-marker 背景色为 --vp-c-brand-1，没有单独的变量。 */
+.VPDocAsideOutline .outline-marker {
+  background-color: var(--blog-coral);
+}
+
+/* O3 medium-zoom 放大层压过导航栏。
+ *    默认：放大层没有 z-index，会被 z-index 为 --vp-z-index-nav（30）的导航栏盖住。 */
+.medium-zoom-overlay,
+.medium-zoom-image--opened {
+  z-index: 100;
+}
