@@ -1,9 +1,6 @@
 /* =================================================================
- * 文章正文：窄版心、衬线标题、文章头导语、提示框/代码/公式
+ * 文章正文：衬线标题、文章头导语、提示框/代码/公式
  * ================================================================= */
-/* !important：对抗 VPDoc 的 scoped .VPDoc.has-aside .content-container[data-v] { max-width: 688px } 等规则 */
-.VPDoc .content-container { max-width: 680px !important; }
-
 /* 标题 */
 .vp-doc h1, .vp-doc h2, .vp-doc h3, .vp-doc h4 {
   font-family: var(--font-serif);

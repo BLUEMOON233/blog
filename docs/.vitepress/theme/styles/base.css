@@ -1,5 +1,7 @@
 /* =================================================================
- * 全站基础：选区、焦点、元信息、导航、目录、列表页骨架
+ * 全站基础：选区、焦点、元信息、列表页骨架
+ * 只用自己的 class 和 VitePress 公开的 CSS 变量，不改 VitePress 内部组件（.VP*）的样式：
+ * 那些 class 名和组件内部样式不在官方保证范围内，升级时可能悄悄失效。
  * ================================================================= */
 ::selection { background: var(--selection-bg); }
 
@@ -20,50 +22,6 @@
 }
 .kicker a { color: var(--accent); text-decoration: none; }
 .kicker a:hover { text-decoration: underline; text-underline-offset: 3px; }
-
-/* 导航：毛玻璃 + 衬线站名 */
-.VPNav .VPNavBar .content-body,
-.VPNav .VPNavBar:not(.home.top) .content-body {
-  background: var(--vp-nav-bg-color);
-  -webkit-backdrop-filter: saturate(160%) blur(12px);
-  backdrop-filter: saturate(160%) blur(12px);
-}
-.VPNavBar .title {
-  font-family: var(--font-serif);
-  font-size: 1.2rem;
-  font-weight: var(--fw-head);
-  letter-spacing: -0.01em;
-}
-.VPNavBarMenuLink,
-.VPNavScreenMenuLink { letter-spacing: 0.04em; }
-.VPNavBarMenuLink.active {
-  /* !important：对抗 VPNavBarMenuLink 的 scoped .VPNavBarMenuLink.active[data-v] { color: brand-1 }（0,3,0） */
-  color: var(--ink) !important;
-  /* 下划线用 accent：clay 对象牙底只有 2.96，不够非文本 3:1 */
-  text-decoration: underline 2px var(--accent);
-  text-underline-offset: 6px;
-}
-.VPNavBarSearch .DocSearch-Button-Placeholder,
-.VPNavBarSearch .DocSearch-Button-Key { font-size: var(--fs-meta); }
-
-/* 文章右侧目录（VitePress 默认已是 14px，这里只换字体与颜色） */
-.VPDocAsideOutline .outline-title {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: var(--meta);
-}
-.VPDocAsideOutline .outline-marker { background-color: var(--clay); }
-.VPLocalNav .menu-text,
-.VPLocalNavOutlineDropdown button { font-size: var(--fs-meta); }
-
-/* 跳到正文：!important 对抗 VPSkipLink 的 scoped .VPSkipLink[data-v] { font-size: 12px }（0,2,0） */
-.VPSkipLink { font-size: var(--fs-meta) !important; }
-
-/* 本地搜索弹窗里的小字：!important 对抗 VPLocalSearchBox 的 scoped 0.8rem 字号 */
-.VPLocalSearchBox .titles,
-.VPLocalSearchBox .search-keyboard-shortcuts,
-.VPLocalSearchBox .excerpt { font-size: var(--fs-meta) !important; }
 
 /* 列表页（归档 / 分类 / 标签）共用的版心与“返回”链接 */
 .list-page { max-width: 960px; margin: 0 auto; padding: 4rem 2rem 6rem; }
