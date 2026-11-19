@@ -100,14 +100,17 @@ export default defineConfig({
             prefix: true,
           }
         },
-        // 自定义渲染函数：移除 h2–h6 标题，只保留纯文本内容
+        // 官方文档的写法：https://vitepress.dev/reference/default-theme-search#custom-content-renderer
+        // 本地搜索按带锚点的标题切分小节，第一个标题之前的内容不进索引。
+        // 正文没有一级标题的文章（标题来自文件名），在前面补上 frontmatter 的标题，否则整篇搜不到。
         _render: async (src, env, md) => {
-          // 渲染 Markdown 为 HTML（VitePress 2 的 md 是 MarkdownItAsync，同步 render 会留下代码高亮占位符）
           const html = await md.renderAsync(src, env)
-          // 自定义 _render 会绕过默认的 search: false 检查，这里补上，并排除草稿；返回空串即不进索引
-          if (env.frontmatter?.search === false || isDraft(env.frontmatter)) return ''
-          // 移除 h2–h6 标题标签，只保留文本内容用于搜索
-          return html.replace(/<h[2-6][^>]*>.*?<\/h[2-6]>/gi, '')
+          // 自定义 _render 会绕过默认的 search: false 检查，需要自己处理；env 在渲染之后才填好
+          if (env.frontmatter?.search === false) return ''
+          if (env.frontmatter?.title && !/<h1[^>]*>.*?class="header-anchor"/.test(html)) {
+            return (await md.renderAsync(`# ${env.frontmatter.title}`)) + html
+          }
+          return html
         },
         locales: {
           root: {
