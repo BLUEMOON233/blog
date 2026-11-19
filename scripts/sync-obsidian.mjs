@@ -1,8 +1,13 @@
 #!/usr/bin/env node
-// 把 Obsidian 仓库里写了 `publish: blog` 的笔记同步到 docs/posts/。
+// 把 Obsidian 仓库里的笔记同步到 docs/posts/。
+//
+// 发布规则：顶层文件夹（论文、折腾、课程、项目……）里的笔记都会发布，分类就是顶层文件夹名；
+// Inbox（草稿）、Attachments、模板目录和仓库根目录下的笔记不发布。
+// 属性都可选：标题默认文件名，网址默认文件名（写了 slug 就用 slug），
+// 没写 date 的笔记第一次发布时，脚本会把当天日期写回笔记。
 //
 // Obsidian 仓库是文章的唯一源头：docs/posts/ 下的 .md 文件和 assets/ 目录完全由本脚本管理，
-// 仓库里找不到来源的文章（取消发布、改了 slug、删除了笔记）会在同步时从博客删除。
+// 仓库里找不到来源的文章（挪回 Inbox、改了文件名或 slug、删除了笔记）会在同步时从博客删除。
 // 站点页面（首页、关于、归档等）不在 docs/posts/ 下，不受影响。
 //
 // 用法：npm run sync -- [--vault <路径>] [--dry-run] [--yes] [--no-commit]
@@ -38,7 +43,7 @@ const CALLOUT_MAP = {
 // 与 VitePress 默认的标题锚点规则一致（@mdit-vue/shared 的 slugify）
 const rControl = /[\u0000-\u001f]/g
 const rSpecial = /[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'“”‘’<>,.?/]+/g
-const rCombining = /[̀-ͯ]/g
+const rCombining = /[\u0300-\u036F]/g
 const slugify = (s) => s.normalize('NFKD').replace(rCombining, '').replace(rControl, '')
   .replace(rSpecial, '-').replace(/-{2,}/g, '-').replace(/^-+|-+$/g, '')
   .replace(/^(\d)/, '_$1').toLowerCase()
@@ -55,7 +60,7 @@ const { values: args } = parseArgs({
   }
 })
 if (args.help) {
-  console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 14).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'))
+  console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 19).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'))
   process.exit(0)
 }
 const expandHome = (p) => (p.startsWith('~') ? path.join(homedir(), p.slice(1)) : p)
@@ -70,7 +75,7 @@ const toPosix = (p) => p.split(path.sep).join('/')
 
 // ---------- 扫描仓库 ----------
 
-// 模板目录里的笔记不参与发布（「发布到博客」模板本身就带着发布字段）
+// 模板目录里的笔记不参与发布，也不作为链接目标
 let templateDir = null
 try {
   const t = JSON.parse(fs.readFileSync(path.join(VAULT, '.obsidian', 'templates.json'), 'utf8'))
@@ -114,41 +119,64 @@ function resolveIn(list, linkpath, fromRel, isNote) {
   return hits.find((f) => path.posix.dirname(f.rel) === dir) || hits.sort((a, b) => a.rel.length - b.rel.length)[0]
 }
 
+const FM_RE = /^---\r?\n(?:([\s\S]*?)\r?\n)?---[ \t]*(?:\r?\n|$)/
+
 function splitFrontmatter(src) {
-  const m = src.match(/^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/)
+  const m = src.match(FM_RE)
   if (!m) return { fm: {}, body: src }
   let fm
   try {
-    fm = parseYaml(m[1]) || {}
+    fm = parseYaml(m[1] || '') || {}
   } catch (e) {
     return { fm: null, body: src, error: e.message.split('\n')[0] }
   }
   return { fm, body: src.slice(m[0].length) }
 }
 
+// 第一次发布时把日期写回笔记属性，以后文章日期和网址就固定了
+function writeDateBack(abs, date) {
+  const src = fs.readFileSync(abs, 'utf8')
+  const m = src.match(FM_RE)
+  const next = m
+    ? `---\n${m[1] ? m[1] + '\n' : ''}date: ${date}\n---\n${src.slice(m[0].length)}`
+    : `---\ndate: ${date}\n---\n${src}`
+  fs.writeFileSync(abs, next)
+}
+
 // ---------- 收集要发布的笔记并校验 ----------
+
+const SKIP_TOP = new Set(['Inbox', 'Attachments', templateDir].filter(Boolean))
+const now = new Date()
+const TODAY = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+// 文件名当网址：空白换成连字符，去掉在网址或 Markdown 链接里有特殊含义的符号
+const fileSlug = (name) => name.trim().replace(/\s+/g, '-').replace(/[#?%&+=;:,'"<>|\\^`[\]{}()!*$@~]/g, '')
+  .replace(/-{2,}/g, '-').replace(/^[-.]+|-+$/g, '')
 
 const errors = []
 const warnings = []
-const published = new Map() // note.rel → { note, fm, body, out }
+const published = new Map() // note.rel → { note, meta, body, out, needsDate }
 
 for (const note of notes) {
+  const top = note.rel.split('/')
+  if (top.length < 2 || SKIP_TOP.has(top[0])) continue
   const src = fs.readFileSync(note.abs, 'utf8')
   const { fm, body, error } = splitFrontmatter(src)
   if (error) {
-    if (/publish:\s*blog/.test(src)) errors.push(`${note.rel}：属性 YAML 解析失败（${error}）`)
+    errors.push(`${note.rel}：属性 YAML 解析失败（${error}）`)
     continue
   }
-  if (fm.publish !== 'blog') continue
 
   const e = []
   const str = (k) => (fm[k] == null ? '' : fm[k] instanceof Date ? fm[k].toISOString().slice(0, 10) : String(fm[k]).trim())
-  const title = str('title'), date = str('date'), category = str('category'), description = str('description'), slug = str('slug')
-  if (!title) e.push('缺少 title')
-  if (!DATE_RE.test(date)) e.push(`date 应为 YYYY-MM-DD，现在是「${fm.date ?? ''}」`)
-  if (!category) e.push('缺少 category')
-  if (!description) e.push('缺少 description')
-  if (!SLUG_RE.test(slug)) e.push(`slug 只能用小写字母、数字和连字符，现在是「${fm.slug ?? ''}」`)
+  const name = note.base.slice(0, -3)
+  const title = str('title') || name
+  const needsDate = !str('date')
+  const date = str('date') || TODAY
+  const slug = str('slug') || fileSlug(name)
+  const description = str('description')
+  if (!DATE_RE.test(date)) e.push(`date 应为 YYYY-MM-DD，现在是「${fm.date}」`)
+  if (str('slug') && !SLUG_RE.test(slug)) e.push(`slug 只能用小写字母、数字和连字符，现在是「${fm.slug}」`)
+  if (!slug) e.push('文件名里没有能当网址的字符，请改文件名或写 slug')
   let tags = fm.tags == null ? [] : Array.isArray(fm.tags) ? fm.tags : [fm.tags]
   tags = tags.filter((t) => t != null && String(t).trim()).map((t) => String(t).trim().replace(/^#/, ''))
   for (const t of tags) if (t.includes('/')) e.push(`标签「${t}」含有 /，博客的标签页地址会出错`)
@@ -157,16 +185,16 @@ for (const note of notes) {
     continue
   }
   const [y, m] = date.split('-')
-  const out = `${y}/${m}/${slug}.md`
-  const meta = { title, date, category, tags, description }
-  if (fm.draft === true) meta.draft = true
-  published.set(note.rel, { note, meta, body, out })
+  const meta = { title, date, category: top[0], tags }
+  if (description) meta.description = description
+  published.set(note.rel, { note, meta, body, out: `${y}/${m}/${slug}.md`, needsDate })
 }
 
 const byOut = new Map()
 for (const p of published.values()) {
-  if (byOut.has(p.out)) errors.push(`${p.note.rel} 和 ${byOut.get(p.out).note.rel} 都会发布到 posts/${p.out}，请改其中一篇的 slug`)
-  else byOut.set(p.out, p)
+  const key = p.out.toLowerCase() // macOS 不区分大小写，只差大小写也算冲突
+  if (byOut.has(key)) errors.push(`${p.note.rel} 和 ${byOut.get(key).note.rel} 都会发布到 posts/${p.out}，请改其中一篇的文件名或写 slug`)
+  else byOut.set(key, p)
 }
 
 // ---------- 正文转换 ----------
@@ -379,7 +407,8 @@ for (const w of [...new Set(warnings)]) console.log(`\x1b[33m  ! ${w}\x1b[0m`)
 if (warnings.length) console.log()
 
 const total = plan.add.length + plan.update.length + plan.remove.length
-if (!total) {
+const dated = [...byOut.values()].filter((p) => p.needsDate)
+if (!total && !dated.length) {
   console.log('博客已经是最新的，没有需要同步的改动。')
   process.exit(0)
 }
@@ -390,6 +419,10 @@ const show = (sym, color, rel) => {
 if (plan.add.length) { console.log('新增：'); plan.add.forEach((r) => show('+', 32, r)) }
 if (plan.update.length) { console.log('更新：'); plan.update.forEach((r) => show('~', 36, r)) }
 if (plan.remove.length) { console.log('删除（仓库里没有对应来源）：'); plan.remove.forEach((r) => show('-', 31, r)) }
+if (dated.length) {
+  console.log(`第一次发布，会在笔记属性里写上日期 ${TODAY}：`)
+  dated.forEach((p) => console.log(`  ${p.note.rel}`))
+}
 console.log()
 
 if (args['dry-run']) process.exit(0)
@@ -421,6 +454,7 @@ if (!args.yes && !(await ask('确认写入？[y/N] '))) {
 }
 
 // 先删后写：macOS 默认不区分大小写，DONUT.md → donut.md 这类改名若先写后删，会把新写的文件一起删掉
+for (const p of dated) writeDateBack(p.note.abs, p.meta.date)
 for (const rel of plan.remove) fs.rmSync(existing.get(rel))
 for (const rel of [...plan.add, ...plan.update]) {
   const d = desired.get(rel)
