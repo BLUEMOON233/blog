@@ -7,26 +7,17 @@ const HOSTNAME = 'https://blog.bluemoon233.com'
 const SITE_TITLE = 'BLUEMOON的博客'
 const SITE_DESC = '朝闻道，夕可死矣'
 
-const draftUrls = new Set<string>()
-const isDraft = (fm?: Record<string, any>) => fm?.draft === true
-
-
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   lang: "zh-CN",
   title: SITE_TITLE,
   description: SITE_DESC,
 
-  // 草稿（frontmatter 写 draft: true）不进 sitemap / RSS / 文章列表
   sitemap: {
-    hostname: HOSTNAME,
-    transformItems: (items) => items.filter((i) => !draftUrls.has(i.url))
+    hostname: HOSTNAME
   },
 
   transformPageData(pageData) {
-    if (isDraft(pageData.frontmatter) && pageData.relativePath.startsWith('posts/')) {
-      draftUrls.add(pageData.relativePath.replace(/\.md$/, '.html'))
-    }
     // 分类/标签详情页是动态路由，没有 frontmatter title 也没有 Markdown H1，按路由参数补标题和描述
     const p = pageData.params
     if (p?.category) {
@@ -65,7 +56,6 @@ export default defineConfig({
       if (published) head.push(['meta', { property: 'article:published_time', content: published.toISOString() }])
       for (const t of fm.tags || []) head.push(['meta', { property: 'article:tag', content: String(t) }])
     }
-    if (isPost && isDraft(fm)) head.push(['meta', { name: 'robots', content: 'noindex' }])
     return head
   },
 

@@ -32,7 +32,7 @@ function readBuiltContent(outDir: string, url: string, hostname: string) {
     .replace(/(href|src)="\/(?!\/)/g, `$1="${hostname}/`)
 }
 
-// 构建结束后生成 dist/feed.xml（RSS 2.0），草稿 draft: true 和没有有效 date 的文章不收录
+// 构建结束后生成 dist/feed.xml（RSS 2.0），没有有效 date 的文章不收录
 export async function genFeed(
   config: SiteConfig,
   site: { hostname: string; title: string; description: string }
@@ -55,7 +55,7 @@ export async function genFeed(
   posts
     .flatMap((p) => {
       const published = parseDate(p.frontmatter.date)
-      return p.frontmatter.draft !== true && published ? [{ ...p, published }] : []
+      return published ? [{ ...p, published }] : []
     })
     .sort((a, b) => +b.published - +a.published)
     .slice(0, 30)

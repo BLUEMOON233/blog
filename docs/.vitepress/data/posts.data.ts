@@ -19,8 +19,6 @@ export { data }
 export default createContentLoader('posts/**/*.md', {
   transform(raw): Post[] {
     return raw
-      // draft: true 的草稿不出现在首页/归档/分类/标签里
-      .filter(({ frontmatter }) => frontmatter.draft !== true)
       // 没有或写错 date 的文章跳过并警告，不让列表组件在 SSR 时崩溃
       .filter(({ url, frontmatter }) => {
         if (parseDate(frontmatter.date)) return true
