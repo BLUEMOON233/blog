@@ -142,20 +142,6 @@ export default defineConfig({
   markdown: {
     // 官方数学公式支持（依赖 markdown-it-mathjax3），会给公式加 v-pre，避免 {{ }} 被 Vue 解析
     math: true,
-    codeTransformers: [
-      {
-        // github-light / github-dark 的注释色 #6A737D 在暖色代码底上不足 4.5:1
-        // （亮色 #f0eee6 上 4.15，暗色 #1a1918 上 3.65），换成同色系更深 / 更浅的灰
-        name: 'blog:comment-contrast',
-        span(node) {
-          const style = node.properties.style
-          if (typeof style !== 'string') return
-          node.properties.style = style
-            .replace(/--shiki-light:#6a737d/i, '--shiki-light:#5f666e')
-            .replace(/--shiki-dark:#6a737d/i, '--shiki-dark:#8b949e')
-        }
-      }
-    ],
     config: (md) => {
       md.use(postHead)
     }

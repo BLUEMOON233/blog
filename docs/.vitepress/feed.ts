@@ -23,8 +23,9 @@ function readBuiltContent(outDir: string, url: string, hostname: string) {
   const from = start.index! + start[0].length
   return html.slice(from, from + end.index!)
     // 去掉标题旁的空锚点和代码块的复制按钮
-    .replace(/<a class="header-anchor"[^>]*>[\s\S]*?<\/a>/g, '')
-    .replace(/<button title="[^"]*" class="copy">[\s\S]*?<\/button>/g, '')
+    // 只认 class，不管属性顺序和其他属性（VitePress 2.0.0-alpha.19 起复制按钮多了 data-copied）
+    .replace(/<a\b[^>]*\bclass="header-anchor"[^>]*>[\s\S]*?<\/a>/g, '')
+    .replace(/<button\b[^>]*\bclass="copy"[^>]*>[\s\S]*?<\/button>/g, '')
     .replaceAll('&ZeroWidthSpace;', '')
     .replaceAll('​', '')
     // 根相对地址（/assets、/pages）在阅读器里没有 base 可解析，转成绝对地址；不碰 // 开头的协议相对地址
